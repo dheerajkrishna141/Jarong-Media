@@ -1,0 +1,105 @@
+Table Users {
+    user_id SERIAL [pk]
+    name VARCHAR(100) [not null]
+    email VARCHAR(100) [unique, not null]
+    password VARCHAR(100) [not null]
+    dob DATE [not null]
+}
+
+Table Roles {
+    role_id SERIAL [pk]
+    role_name VARCHAR(100) [not null]
+}
+
+Table UserRoles {
+    user_role_id SERIAL [pk]
+    user_id INT [not null, ref: > Users.user_id]
+    role_id INT [not null, ref: > Roles.role_id]
+}
+
+Table BookingDetails {
+    booking_id SERIAL [pk]
+    user_id INT [not null, ref: > Users.user_id]
+    name VARCHAR(100) [not null]
+    email VARCHAR(100) [not null]
+    flight_number VARCHAR(100) [not null]
+    departure_airport VARCHAR(100) [not null]
+    arrival_airport VARCHAR(100) [not null]
+    departure_time TIMESTAMP [not null]
+    arrival_time TIMESTAMP [not null]
+    cabin_class VARCHAR(100) [not null]
+    price DECIMAL(10, 2) [not null]
+    booking_date TIMESTAMP [not null]
+    total_amount DECIMAL(10, 2) [not null]
+}
+
+Table Hotels {
+    hotel_id SERIAL [pk]
+    hotel_name VARCHAR(100) [not null]
+    location VARCHAR(100) [not null]
+    rating INT [not null]
+}
+
+Table Hotel_Amenities {
+    hotel_amenity_id SERIAL [pk]
+    hotel_id INT [ref: > Hotels.hotel_id]
+    amenity_id INT [ref: > Amenities.amenity_id]
+}
+
+Table Amenities {
+    amenity_id SERIAL [pk]
+    amenity VARCHAR(100) [not null]
+}
+
+Table Rooms {
+    room_id SERIAL [pk]
+    hotel_id INT [not null, ref: > Hotels.hotel_id]
+    room_category VARCHAR(100) [not null]
+    capacity INT [not null]
+}
+
+Table Room_Features {
+    room_feature_id SERIAL [pk]
+    room_id INT [ref: > Rooms.room_id]
+    feature_id INT [ref: > Features.feature_id]
+}
+
+Table Features {
+    feature_id SERIAL [pk]
+    feature VARCHAR(100) [not null]
+}
+
+Table RoomAvailability {
+    availability_id SERIAL [pk]
+    start_date DATE [not null]
+    end_date DATE [not null]
+    is_available BOOLEAN [not null]
+}
+
+Table RoomAvailabilityDetails {
+    availability_detail_id SERIAL [pk]
+    room_id INT [not null, ref: > Rooms.room_id]
+    availability_id INT [not null, ref: > RoomAvailability.availability_id]
+}
+
+Table HotelBookings {
+    hotel_booking_id SERIAL [pk]
+    user_id INT [not null, ref: > Users.user_id]
+    hotel_id INT [not null, ref: > Hotels.hotel_id]
+    booking_date TIMESTAMP [not null]
+    total_amount DECIMAL(10, 2) [not null]
+}
+
+Table Booking {
+    booking_room_id SERIAL [pk]
+    hotel_booking_id INT [not null, ref: > HotelBookings.hotel_booking_id]
+    check_in_date DATE [not null]
+    check_out_date DATE [not null]
+    price_per_night DECIMAL(10, 2) [not null]
+}
+
+Table Booking_Rooms {
+    room_booking_id SERIAL [pk]
+    room_id INT [not null, ref: > Rooms.room_id]
+    booking_room_id INT [not null, ref: > Booking.booking_room_id]
+}
