@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.jarongmedia_backend.entities.EndUser;
+import com.jarongmedia_backend.exceptions.UserNotVerifiedException;
 import com.jarongmedia_backend.repository.EndUserRepo;
 
 @Configuration
@@ -32,7 +33,11 @@ public class CustomAuthenticationProvider implements AuthenticationProvider {
 
 		if (user != null) {
 			if (passwordEncoder.matches(password, user.getPassword())) {
-				return new UsernamePasswordAuthenticationToken(email, password, user.getRoles());
+				if(user.isEmailVerified()) {
+					return new UsernamePasswordAuthenticationToken(email, password, user.getRoles());					
+				}else {
+					throw new UserNotVerifiedException("User not verified");
+				}
 			} else {
 				throw new BadCredentialsException("Invalid Password!");
 			}

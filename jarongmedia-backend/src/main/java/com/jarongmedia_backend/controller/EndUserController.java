@@ -10,16 +10,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jarongmedia_backend.dto.DeleteMessage;
 import com.jarongmedia_backend.dto.EndUserDTO;
-import com.jarongmedia_backend.dto.PasswordMessage;
+import com.jarongmedia_backend.dto.StatusMessage;
 import com.jarongmedia_backend.dto.loginMessage;
 import com.jarongmedia_backend.dto.passwordDTO;
 import com.jarongmedia_backend.entities.EndUser;
 import com.jarongmedia_backend.exceptions.UserNotFoundException;
 import com.jarongmedia_backend.exceptions.UserNotUniqueException;
+import com.jarongmedia_backend.exceptions.UserNotVerifiedException;
 import com.jarongmedia_backend.service.EndUserService;
 
 @RestController
@@ -42,44 +44,57 @@ public class EndUserController {
 	}
 
 	@GetMapping("/login")
-	public ResponseEntity<loginMessage> loginUser(Authentication auth) {
+	public ResponseEntity<?> loginUser(Authentication auth) {
 
-		return new ResponseEntity<loginMessage>(endUserService.loginUser(auth.getName()), HttpStatus.OK);
+		try {
+			return new ResponseEntity<loginMessage>(endUserService.loginUser(auth.getName()), HttpStatus.OK);
+		} catch (UserNotVerifiedException e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		} catch (Exception e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	@PostMapping("/verify")
+	public ResponseEntity<?> verfiyUser(@RequestParam(required = true, name = "verification_otp") long otp) {
+		StatusMessage message = endUserService.verifyUser(otp);
+		if (message.isStatus()) {
+			return new ResponseEntity<>(message, HttpStatus.ACCEPTED);
+
+		} else {
+			return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+		}
+
 	}
 
 	@PostMapping("/updatePassword")
-	public ResponseEntity<PasswordMessage> updatePassword(Authentication auth, @RequestBody passwordDTO password) {
+	public ResponseEntity<?> updatePassword(Authentication auth, @RequestBody passwordDTO password) {
 
-		PasswordMessage message = new PasswordMessage();
 		try {
-			message = endUserService.changePassword(auth.getName(), password);
-			return new ResponseEntity<PasswordMessage>(message, HttpStatus.ACCEPTED);
+
+			return new ResponseEntity<StatusMessage>(endUserService.changePassword(auth.getName(), password),
+					HttpStatus.ACCEPTED);
 		} catch (Exception e) {
-			message.setMessage(e.getMessage());
-			message.setStatus(false);
-			return new ResponseEntity<PasswordMessage>(message, HttpStatus.INTERNAL_SERVER_ERROR);
+
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 
 		}
 
 	}
 
 	@DeleteMapping("/delete/{id}")
-	public ResponseEntity<DeleteMessage> deleteUser(@PathVariable long id) {
-		DeleteMessage message = new DeleteMessage();
+	public ResponseEntity<?> deleteUser(@PathVariable long id) {
 		try {
-			message = endUserService.deleteUser(id);
-			return new ResponseEntity<DeleteMessage>(message, HttpStatus.ACCEPTED);
+			return new ResponseEntity<DeleteMessage>(endUserService.deleteUser(id), HttpStatus.ACCEPTED);
 		} catch (UserNotFoundException e) {
-			message.setMessage(e.getMessage());
-			message.setStatus(false);
-			return new ResponseEntity<DeleteMessage>(message, HttpStatus.BAD_REQUEST);
+
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 
 		} catch (Exception e) {
-			message.setMessage(e.getMessage());
-			message.setStatus(false);
-			return new ResponseEntity<DeleteMessage>(message, HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 
 		}
 
 	}
+
 }

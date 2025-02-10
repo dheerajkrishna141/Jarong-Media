@@ -1,5 +1,7 @@
 package com.jarongmedia_backend.serviceImpl;
 
+import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.HashSet;
 
 import org.modelmapper.ModelMapper;
@@ -8,17 +10,22 @@ import org.springframework.stereotype.Service;
 
 import com.jarongmedia_backend.dto.DeleteMessage;
 import com.jarongmedia_backend.dto.EndUserDTO;
-import com.jarongmedia_backend.dto.PasswordMessage;
+import com.jarongmedia_backend.dto.StatusMessage;
 import com.jarongmedia_backend.dto.loginMessage;
 import com.jarongmedia_backend.dto.passwordDTO;
 import com.jarongmedia_backend.entities.EndUser;
+import com.jarongmedia_backend.entities.OTP;
 import com.jarongmedia_backend.entities.Roles;
 import com.jarongmedia_backend.exceptions.UserNotFoundException;
 import com.jarongmedia_backend.exceptions.UserNotUniqueException;
 import com.jarongmedia_backend.repository.EndUserRepo;
+import com.jarongmedia_backend.repository.OTPRepository;
 import com.jarongmedia_backend.repository.RoleRepository;
 import com.jarongmedia_backend.service.EncryptionService;
 import com.jarongmedia_backend.service.EndUserService;
+import com.jarongmedia_backend.service.OTPService;
+
+import jakarta.transaction.Transactional;
 
 @Service
 public class EndUserServiceImpl implements EndUserService {
@@ -35,6 +42,15 @@ public class EndUserServiceImpl implements EndUserService {
 	@Autowired
 	RoleRepository roleRepo;
 
+	@Autowired
+	OTPService otpService;
+
+	@Autowired
+	OTPRepository otpRepository;
+
+	@Autowired
+	EmailServiceImpl emailServiceImpl;
+
 	@Override
 	public EndUser createUser(EndUserDTO dto) {
 		EndUser tempUser = endUserRepo.findByEmail(dto.getEmail());
@@ -44,6 +60,7 @@ public class EndUserServiceImpl implements EndUserService {
 		}
 		tempUser = modelmap.map(dto, EndUser.class);
 		tempUser.setRoles(new HashSet<Roles>());
+		tempUser.setVerificationOTP(new ArrayList<OTP>());
 		tempUser.setPassword(encryptionService.EncryptPassword(dto.getPassword()));
 
 		for (String name : dto.getRoles()) {
@@ -52,9 +69,20 @@ public class EndUserServiceImpl implements EndUserService {
 			tempUser.getRoles().add(role);
 
 		}
-
 		tempUser = endUserRepo.save(tempUser);
+		OTP otp = createOTP(tempUser);
+		otpRepository.save(otp);
+
+		emailServiceImpl.sendEmail(tempUser.getEmail(), otp.getOtp());
 		return tempUser;
+	}
+
+	private OTP createOTP(EndUser endUser) {
+		OTP otp = new OTP();
+		otp.setEndUser(endUser);
+		otp.setOtp(otpService.generateOTP());
+		otp.setTimeStamp(new Timestamp(System.currentTimeMillis()));
+		return otp;
 	}
 
 	@Override
@@ -67,9 +95,9 @@ public class EndUserServiceImpl implements EndUserService {
 	}
 
 	@Override
-	public PasswordMessage changePassword(String email, passwordDTO password) {
+	public StatusMessage changePassword(String email, passwordDTO password) {
 
-		PasswordMessage message = new PasswordMessage();
+		StatusMessage message = new StatusMessage();
 		try {
 			EndUser user = endUserRepo.findByEmail(email);
 			String encryptPass = encryptionService.EncryptPassword(password.getPassword());
@@ -93,6 +121,31 @@ public class EndUserServiceImpl implements EndUserService {
 		endUserRepo.delete(user);
 		message.setStatus(true);
 		message.setMessage("User with ID: " + id + " has been deleted succesfully.");
+		return message;
+	}
+
+	@Transactional
+	@Override
+	public StatusMessage verifyUser(long otp) {
+		StatusMessage message = new StatusMessage();
+		OTP userOTP = otpRepository.findByOtp(otp);
+		if (userOTP != null) {
+			EndUser user = userOTP.getEndUser();
+			if (!user.isEmailVerified()) {
+				user.setEmailVerified(true);
+				endUserRepo.save(user);
+				otpRepository.deleteByEndUser(user);
+				message.setStatus(true);
+				message.setMessage("user successfully verified!");
+			} else {
+				message.setStatus(false);
+				message.setMessage("user already verified.");
+			}
+			return message;
+		}
+
+		message.setStatus(false);
+		message.setMessage("OTP not valid");
 		return message;
 	}
 

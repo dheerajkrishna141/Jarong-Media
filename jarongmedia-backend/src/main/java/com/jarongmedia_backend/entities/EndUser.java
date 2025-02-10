@@ -1,9 +1,12 @@
 package com.jarongmedia_backend.entities;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonProperty.Access;
 
@@ -18,6 +21,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -50,7 +54,16 @@ public class EndUser {
 	@JsonProperty(access = Access.WRITE_ONLY)
 	@Column(name = "Date_Of_Birth")
 	private Date dob;
-
+	
+	@JsonIgnore
+	@Column(name = "email_verified")
+	private boolean emailVerified = false;
+	
+	@JsonIgnore
+	@OrderBy("id desc")
+	@OneToMany(mappedBy = "endUser", orphanRemoval = true)
+	private List<OTP> verificationOTP = new ArrayList<OTP>();
+	
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Roles> roles = new HashSet<Roles>();

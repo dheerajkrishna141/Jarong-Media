@@ -9,7 +9,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class PasswordMessage {
+public class StatusMessage {
 	
 	private boolean status;
 	private String message;
