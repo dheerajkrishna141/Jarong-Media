@@ -92,7 +92,7 @@ public class EndUserServiceImpl implements EndUserService {
 				.orElseThrow(() -> new UserNotFoundException("User with Id: " + id + " is not found!"));
 		endUserRepo.delete(user);
 		message.setStatus(true);
-		message.setMessage("User with ID: " + id + " has been deleted succesfully.");
+		message.setMessage("User with ID: " +id + " has been deleted succesfully.");
 		return message;
 	}
 
