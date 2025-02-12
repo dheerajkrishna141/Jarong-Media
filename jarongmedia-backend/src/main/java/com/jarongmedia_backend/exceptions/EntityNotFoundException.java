@@ -4,9 +4,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(value = HttpStatus.BAD_REQUEST)
-public class UserNotFoundException extends RuntimeException{
+public class EntityNotFoundException extends RuntimeException{
 	private String mes;
-	public UserNotFoundException(String mes) {
+	public EntityNotFoundException(String mes) {
 		super(mes);
 		this.mes = mes;
 	}

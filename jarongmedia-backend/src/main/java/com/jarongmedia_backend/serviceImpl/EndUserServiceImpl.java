@@ -16,8 +16,8 @@ import com.jarongmedia_backend.dto.passwordDTO;
 import com.jarongmedia_backend.entities.EndUser;
 import com.jarongmedia_backend.entities.OTP;
 import com.jarongmedia_backend.entities.Roles;
-import com.jarongmedia_backend.exceptions.UserNotFoundException;
-import com.jarongmedia_backend.exceptions.UserNotUniqueException;
+import com.jarongmedia_backend.exceptions.EntityNotFoundException;
+import com.jarongmedia_backend.exceptions.EntityNotUniqueException;
 import com.jarongmedia_backend.repository.EndUserRepo;
 import com.jarongmedia_backend.repository.OTPRepository;
 import com.jarongmedia_backend.repository.RoleRepository;
@@ -56,7 +56,7 @@ public class EndUserServiceImpl implements EndUserService {
 		EndUser tempUser = endUserRepo.findByEmail(dto.getEmail());
 
 		if (tempUser != null) {
-			throw new UserNotUniqueException("User with email: " + dto.getEmail() + " already exists");
+			throw new EntityNotUniqueException("User with email: " + dto.getEmail() + " already exists");
 		}
 		tempUser = modelmap.map(dto, EndUser.class);
 		tempUser.setRoles(new HashSet<Roles>());
@@ -106,8 +106,8 @@ public class EndUserServiceImpl implements EndUserService {
 			message.setStatus(true);
 			message.setMessage("password successfully updated!");
 			return message;
-		} catch (UserNotFoundException e) {
-			throw new UserNotFoundException("user not found");
+		} catch (EntityNotFoundException e) {
+			throw new EntityNotFoundException("user not found");
 
 		}
 
@@ -117,7 +117,7 @@ public class EndUserServiceImpl implements EndUserService {
 	public DeleteMessage deleteUser(long id) {
 		DeleteMessage message = new DeleteMessage();
 		EndUser user = endUserRepo.findById(id)
-				.orElseThrow(() -> new UserNotFoundException("User with Id: " + id + " is not found!"));
+				.orElseThrow(() -> new EntityNotFoundException("User with Id: " + id + " is not found!"));
 		endUserRepo.delete(user);
 		message.setStatus(true);
 		message.setMessage("User with ID: " + id + " has been deleted succesfully.");

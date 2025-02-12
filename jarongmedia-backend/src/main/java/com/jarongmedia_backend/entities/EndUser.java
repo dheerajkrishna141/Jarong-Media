@@ -54,21 +54,24 @@ public class EndUser {
 	@JsonProperty(access = Access.WRITE_ONLY)
 	@Column(name = "Date_Of_Birth")
 	private Date dob;
-	
+
 	@JsonIgnore
 	@Column(name = "email_verified")
 	private boolean emailVerified = false;
-	
+
 	@JsonIgnore
 	@OrderBy("id desc")
 	@OneToMany(mappedBy = "endUser", orphanRemoval = true)
 	private List<OTP> verificationOTP = new ArrayList<OTP>();
-	
+
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Roles> roles = new HashSet<Roles>();
 
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "user")
 	private Set<FlightBookingDetails> flightBookingDetails = new HashSet<FlightBookingDetails>();
+
+	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "endUser")
+	private Set<HotelBookingDetails> hotelBookingDetails = new HashSet<HotelBookingDetails>();
 
 }

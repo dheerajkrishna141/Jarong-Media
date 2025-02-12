@@ -19,8 +19,8 @@ import com.jarongmedia_backend.dto.StatusMessage;
 import com.jarongmedia_backend.dto.loginMessage;
 import com.jarongmedia_backend.dto.passwordDTO;
 import com.jarongmedia_backend.entities.EndUser;
-import com.jarongmedia_backend.exceptions.UserNotFoundException;
-import com.jarongmedia_backend.exceptions.UserNotUniqueException;
+import com.jarongmedia_backend.exceptions.EntityNotFoundException;
+import com.jarongmedia_backend.exceptions.EntityNotUniqueException;
 import com.jarongmedia_backend.exceptions.UserNotVerifiedException;
 import com.jarongmedia_backend.service.EndUserService;
 
@@ -35,7 +35,7 @@ public class EndUserController {
 	public ResponseEntity<?> createUser(@RequestBody EndUserDTO userdto) {
 		try {
 			return new ResponseEntity<EndUser>(endUserService.createUser(userdto), HttpStatus.CREATED);
-		} catch (UserNotUniqueException e) {
+		} catch (EntityNotUniqueException e) {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -86,7 +86,7 @@ public class EndUserController {
 	public ResponseEntity<?> deleteUser(@PathVariable long id) {
 		try {
 			return new ResponseEntity<DeleteMessage>(endUserService.deleteUser(id), HttpStatus.ACCEPTED);
-		} catch (UserNotFoundException e) {
+		} catch (EntityNotFoundException e) {
 
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 
