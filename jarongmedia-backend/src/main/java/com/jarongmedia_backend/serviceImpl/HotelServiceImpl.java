@@ -87,6 +87,10 @@ public class HotelServiceImpl implements HotelService {
 
 	}
 
+	public Room getRoom(String roomId) {
+		return roomRepository.findById(roomId)
+				.orElseThrow(() -> new EntityNotFoundException("Room with Id: " + roomId + " not found!"));
+	}
 
 	@Override
 	public Features createFeature(FeatureDTO featureDTO) {

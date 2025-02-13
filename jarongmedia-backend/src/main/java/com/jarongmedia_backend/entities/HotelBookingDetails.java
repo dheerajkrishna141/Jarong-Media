@@ -2,6 +2,10 @@ package com.jarongmedia_backend.entities;
 
 import java.time.LocalDate;
 
+import org.bson.types.ObjectId;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -25,18 +29,22 @@ public class HotelBookingDetails {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 
+	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id")
 	private EndUser endUser;
 
-	private long hotel_id;
+	private ObjectId hotelId;
+	
+	private String roomId;
 
-	private long room_id;
+	private LocalDate checkInDate;
 
-	private LocalDate check_in_date;
+	private LocalDate checkOutDate;
+	
+	private String confirmationCode;
 
-	private LocalDate check_out_date;
-
-	private double total_amount;
+	private double totalAmount;
+	
 
 }

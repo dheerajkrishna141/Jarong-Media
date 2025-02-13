@@ -68,9 +68,11 @@ public class EndUser {
 	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Roles> roles = new HashSet<Roles>();
 
+	@JsonIgnore
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "user")
 	private Set<FlightBookingDetails> flightBookingDetails = new HashSet<FlightBookingDetails>();
 
+	@JsonIgnore
 	@OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "endUser")
 	private Set<HotelBookingDetails> hotelBookingDetails = new HashSet<HotelBookingDetails>();
 

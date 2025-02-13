@@ -3,6 +3,7 @@ package com.jarongmedia_backend.serviceImpl;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -182,5 +183,29 @@ public class AvailabilityServiceImpl implements AvailabilityService {
 		availability.setRoomId(availabilityDTO.getRoomId());
 		availability.setStatus(availabilityDTO.getStatus());
 		return availability;
+	}
+
+	@Override
+	public Set<Availability> getAvailability(AvailabilityDTO availabilityDTO) {
+
+		Set<Availability> availableRooms = availabilityRepository
+				.findByCheckInDateLessThanEqualAndCheckOutDateGreaterThanEqual(availabilityDTO.getCheckInDate(),
+						availabilityDTO.getCheckOutDate());
+		availableRooms = availableRooms.stream().filter((availability -> !"booked".equals(availability.getStatus())))
+				.collect(Collectors.toSet());
+
+		return availableRooms;
+
+	}
+
+	@Override
+	public Set<Availability> getAvailability() {
+
+		Set<Availability> availableRooms = availabilityRepository.findByStatus("available");
+		availableRooms = availableRooms.stream().filter((availability -> !"booked".equals(availability.getStatus())))
+				.collect(Collectors.toSet());
+
+		return availableRooms;
+
 	}
 }

@@ -32,9 +32,10 @@ public class SecurityConfig {
 		}));
 
 		http.authorizeHttpRequests(auth -> {
+			auth.requestMatchers("/user/booking/**").authenticated();
+			auth.requestMatchers("/user/register", "/user/login", "/user/verify").permitAll();
+			auth.requestMatchers("/user/delete/{id}").hasAnyRole("ADMIN");
 			auth.anyRequest().permitAll();
-//			auth.requestMatchers("/user/register", "/user/login", "/user/verify").permitAll();
-//			auth.requestMatchers("/user/delete/{id}").hasAnyRole("ADMIN");
 //			auth.anyRequest().authenticated();
 
 		});
