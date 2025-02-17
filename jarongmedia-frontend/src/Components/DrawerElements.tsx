@@ -1,23 +1,18 @@
-import { LuDoorClosed, LuDoorOpen, LuHouse } from "react-icons/lu";
+import { Box, Button, Collapsible, VStack } from "@chakra-ui/react";
+import { FaChevronDown, FaTachometerAlt } from "react-icons/fa";
 import { ImAccessibility } from "react-icons/im";
 import { IoList } from "react-icons/io5";
+import { LuDoorClosed, LuDoorOpen, LuHouse } from "react-icons/lu";
 import { RiCouponFill } from "react-icons/ri";
-import {
-  Box,
-  Button,
-  ButtonGroup,
-  Collapsible,
-  Container,
-  VStack,
-} from "@chakra-ui/react";
-import { FaChevronDown, FaTachometerAlt } from "react-icons/fa";
-export const elements = [
-  { value: "Dashboard", icon: "dashboard" },
-  { value: "Hotels", icon: "house" },
-  { value: "Room", icon: "door" },
-  { value: "Feature List", icon: "features" },
-  { value: "Room List", icon: "roomlist" },
-  { value: "Promocode", icon: "promocode" },
+import { Link, useNavigate } from "react-router-dom";
+
+const elements = [
+  { value: "Dashboard", icon: "dashboard", navigateTo: "/" },
+  { value: "Hotels", icon: "house", navigateTo: "/hotel" },
+  { value: "Room", icon: "door", navigateTo: "" },
+  { value: "Feature List", icon: "features", navigateTo: "/features" },
+  { value: "Room List", icon: "roomlist", navigateTo: "/roomList" },
+  { value: "Promocode", icon: "promocode", navigateTo: "/promocodes" },
 ];
 
 const getIcon = (icon: string) => {
@@ -39,14 +34,12 @@ const getIcon = (icon: string) => {
   }
 };
 
-interface props {
-  setMain: (val: string) => void;
-}
-
-const DrawerElements = ({ setMain }: props) => {
+const DrawerElements = () => {
+  const navigate = useNavigate();
   const conditionalCollapsibleRender = (element: {
     value: string;
     icon: string;
+    navigateTo: string;
   }) => {
     if (element.value === "Room") {
       return (
@@ -65,7 +58,7 @@ const DrawerElements = ({ setMain }: props) => {
               key={"bookRoom"}
               variant={"ghost"}
               onClick={() => {
-                setMain("BookRoom");
+                navigate("bookRoom");
               }}
             >
               {getIcon(element.icon)}
@@ -76,7 +69,7 @@ const DrawerElements = ({ setMain }: props) => {
               key={"View Availability"}
               variant={"ghost"}
               onClick={() => {
-                setMain("Availability");
+                navigate("availability");
               }}
             >
               {<LuDoorOpen />}
@@ -87,17 +80,12 @@ const DrawerElements = ({ setMain }: props) => {
       );
     } else
       return (
-        <Button
-          size={"lg"}
-          key={element.value}
-          variant={"ghost"}
-          onClick={() => {
-            setMain(element.value);
-          }}
-        >
-          {getIcon(element.icon)}
-          {element.value}
-        </Button>
+        <Link to={`/admin${element.navigateTo}`} key={element.value}>
+          <Button size={"lg"} key={element.value} variant={"ghost"}>
+            {getIcon(element.icon)}
+            {element.value}
+          </Button>
+        </Link>
       );
   };
   return (

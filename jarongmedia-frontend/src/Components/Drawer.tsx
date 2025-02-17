@@ -1,6 +1,4 @@
-import { Button } from "@chakra-ui/react";
 import {
-  DrawerActionTrigger,
   DrawerBackdrop,
   DrawerBody,
   DrawerCloseTrigger,
@@ -11,13 +9,11 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/Components/UI/drawer";
+import { Button } from "@chakra-ui/react";
 import { TiThMenu } from "react-icons/ti";
 import DrawerElements from "./DrawerElements";
-import { useContext } from "react";
-import MainContext from "@/stateManagement/MainContext";
 
 const Drawer = () => {
-  const { main, setMain } = useContext(MainContext);
   return (
     <DrawerRoot placement={"start"}>
       <DrawerBackdrop />
@@ -31,10 +27,11 @@ const Drawer = () => {
           <DrawerTitle>Menu</DrawerTitle>
         </DrawerHeader>
         <DrawerBody>
-          <DrawerElements setMain={setMain}></DrawerElements>
+          <DrawerElements></DrawerElements>
         </DrawerBody>
-        <DrawerFooter></DrawerFooter>
         <DrawerCloseTrigger />
+
+        <DrawerFooter></DrawerFooter>
       </DrawerContent>
     </DrawerRoot>
   );

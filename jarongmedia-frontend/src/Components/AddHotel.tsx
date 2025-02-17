@@ -1,33 +1,16 @@
 import {
   Box,
-  Heading,
-  Card,
-  Grid,
-  Field,
-  Input,
-  Select,
-  SelectRoot,
-  Textarea,
-  VStack,
-  RadioGroup,
-  RadioGroupRoot,
-  Stack,
-  Checkbox,
-  CheckboxRoot,
-  Switch,
-  SwitchRoot,
   Button,
-  NumberInput,
-  NumberInputRoot,
-  SelectTrigger,
-  SelectValueText,
+  Card,
+  Field,
+  Grid,
+  Heading,
+  Input,
+  Textarea,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
-import { toaster } from "./UI/toaster";
-import { Radio } from "./UI/radio";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 const formSchema = z.object({
   name: z
@@ -40,7 +23,7 @@ const formSchema = z.object({
     .string({ message: "State is required" })
     .min(5, { message: "Enter atleast 5 characters" }),
   zip: z
-    .number({ message: "Zip is required" })
+    .string({ message: "Zip is required" })
     .min(5, { message: "Enter atleast 5 characters" }),
   country: z
     .string({ message: "Country is required" })
@@ -57,7 +40,6 @@ const AddHotel = () => {
     handleSubmit,
     formState: { errors },
     register,
-    control,
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
   });
@@ -74,7 +56,6 @@ const AddHotel = () => {
         Fill Out Hotel Details
       </Heading>
 
-      {/* Reservation Details Card. */}
       <Card.Root mb={6} shadow={"md"}>
         <Card.Header>
           <Heading size="2xl">Hotel Details</Heading>
@@ -122,40 +103,6 @@ const AddHotel = () => {
               <Field.ErrorText>{errors.country?.message}</Field.ErrorText>
             </Field.Root>
 
-            {/* <Field.Root>
-              <Field.Label>Booking Type</Field.Label>
-              <SelectRoot
-                name="bookingType"
-                value={formData.bookingType}
-                onChange={handleInputChange}
-                placeholder="Choose Booking Type"
-              >
-                <Select.Item value="standard">Standard</Select.Item>
-                <Select.Item value="business">Business</Select.Item>
-                <Select.Item value="luxury">Luxury</Select.Item>
-              </SelectRoot>
-            </Field.Root>
-
-            <Field.Root>
-              <Field.Label>Booking Reference No</Field.Label>
-              <Input
-                name="bookingReference"
-                value={formData.bookingReference}
-                onChange={handleInputChange}
-                placeholder="Booking Reference No."
-              />
-            </Field.Root> */}
-
-            {/* <Field.Root>
-              <Field.Label>Purpose of Visit</Field.Label>
-              <Input
-                name="purposeOfVisit"
-                value={formData.purposeOfVisit}
-                onChange={handleInputChange}
-                placeholder="Purpose of Visit"
-              />
-            </Field.Root> */}
-
             <Field.Root
               gridColumn={{ md: "span 2", lg: "span 3" }}
               invalid={errors.description ? true : false}
@@ -173,10 +120,10 @@ const AddHotel = () => {
         </Card.Body>
       </Card.Root>
       <Box className="flex justify-end" gap={4}>
-        <Button type="reset" variant={"outline"} size="lg">
+        <Button type="reset" variant={"outline"} size="md">
           Cancel
         </Button>
-        <Button type="submit" colorScheme="blue" size="lg">
+        <Button type="submit" size="md">
           Submit
         </Button>
       </Box>

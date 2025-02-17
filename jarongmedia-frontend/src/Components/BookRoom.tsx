@@ -1,96 +1,75 @@
-import React from "react";
 import {
   Box,
-  Heading,
-  Card,
-  Grid,
-  Field,
-  Input,
-  Select,
-  SelectRoot,
-  Textarea,
-  VStack,
-  RadioGroup,
-  RadioGroupRoot,
-  Stack,
-  Checkbox,
-  CheckboxRoot,
-  Switch,
-  SwitchRoot,
   Button,
-  NumberInput,
-  NumberInputRoot,
+  Card,
+  createListCollection,
+  Field,
+  Fieldset,
+  FieldsetErrorText,
+  Flex,
+  Grid,
+  Heading,
+  Input,
+  RadioGroup,
+  SelectContent,
+  SelectItem,
+  SelectRoot,
+  SelectTrigger,
+  SelectValueText,
+  Textarea,
 } from "@chakra-ui/react";
-import { useState } from "react";
-import { toaster } from "./UI/toaster";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useForm } from "react-hook-form";
+import { bookingSchema, type BookingFormData } from "../schema/BookingSchema";
 import { Radio } from "./UI/radio";
 
+const roomType = createListCollection({
+  items: [
+    { value: "single", label: "Single" },
+    { value: "double", label: "Double" },
+    { value: "suite", label: "Suite" },
+  ],
+});
+
+const bookingType = createListCollection({
+  items: [
+    { value: "standard", label: "Standard" },
+    { value: "business", label: "Business" },
+    { value: "luxury", label: "Luxury" },
+  ],
+});
+
+const paymentMethod = createListCollection({
+  items: [
+    { value: "credit", label: "Credit Card" },
+    { value: "debit", label: "Debit Card" },
+    { value: "cash", label: "Cash" },
+  ],
+});
+
 const BookRoom = () => {
-  const [formData, setFormData] = useState({
-    // Reservation Details
-    checkIn: "",
-    checkOut: "",
-    arrivalFrom: "",
-    bookingType: "",
-    bookingReference: "",
-    purposeOfVisit: "",
-    remarks: "",
-
-    // Room Details
-    roomType: "",
-    roomNo: "",
-    adults: 0,
-    children: 0,
-
-    // Customer Details (Extended)
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-    address: "",
-    city: "",
-    country: "",
-    postalCode: "",
-    idType: "",
-    idNumber: "",
-
-    // Additional Form Elements
-    newsletter: false,
-    termsAccepted: false,
-    paymentMethod: "",
-    specialRequests: [],
-    rating: 5,
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors },
+  } = useForm<BookingFormData>({
+    resolver: zodResolver(bookingSchema),
   });
-  const handleInputChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
-  ) => {
-    const { name, value, type } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]:
-        type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
-    }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Form Data:", formData);
-    toaster.create({
-      title: "Form Submitted",
-      description: "Check console for form data",
-      type: "success",
-      duration: 5000,
-    });
-  };
 
   return (
-    <Box as="form" onSubmit={handleSubmit} p={4}>
-      <Heading mb={6}>Fill Out Booking Details</Heading>
+    <Box
+      as="form"
+      onSubmit={handleSubmit((data) => {
+        console.log(data);
+      })}
+      p={4}
+    >
+      <Heading size={"3xl"} mb={6}>
+        Fill Out Booking Details
+      </Heading>
 
-      {/* Reservation Details Card. */}
-      <Card.Root mb={6}>
+      <Card.Root shadow={"lg"} mb={6}>
         <Card.Header>
           <Heading size="md">Reservation Details</Heading>
         </Card.Header>
@@ -103,66 +82,56 @@ const BookRoom = () => {
             }}
             gap={6}
           >
-            <Field.Root required>
+            <Field.Root invalid={!!errors.checkIn}>
               <Field.Label>Check In</Field.Label>
-              <Input
-                type="date"
-                name="checkIn"
-                value={formData.checkIn}
-                onChange={handleInputChange}
-              />
+              <Input type="date" {...register("checkIn")} />
+              <Field.ErrorText>{errors.checkIn?.message}</Field.ErrorText>
             </Field.Root>
 
-            <Field.Root required>
+            <Field.Root invalid={!!errors.checkOut}>
               <Field.Label>Check Out</Field.Label>
-              <Input
-                type="date"
-                name="checkOut"
-                value={formData.checkOut}
-                onChange={handleInputChange}
-              />
+              <Input type="date" {...register("checkOut")} />
+              <Field.ErrorText>{errors.checkOut?.message}</Field.ErrorText>
             </Field.Root>
 
             <Field.Root>
               <Field.Label>Arrival From</Field.Label>
-              <Input
-                name="arrivalFrom"
-                value={formData.arrivalFrom}
-                onChange={handleInputChange}
-                placeholder="Arrival From"
-              />
+              <Input {...register("arrivalFrom")} placeholder="Arrival From" />
             </Field.Root>
-            {/* 
-            <Field.Root>
-              <Field.Label>Booking Type</Field.Label>
-              <SelectRoot
-                name="bookingType"
-                value={formData.bookingType}
-                onChange={handleInputChange}
-                placeholder="Choose Booking Type"
-              >
-                <Select.Item value="standard">Standard</Select.Item>
-                <Select.Item value="business">Business</Select.Item>
-                <Select.Item value="luxury">Luxury</Select.Item>
-              </SelectRoot>
-            </Field.Root> */}
 
-            <Field.Root>
-              <Field.Label>Booking Reference No</Field.Label>
-              <Input
-                name="bookingReference"
-                value={formData.bookingReference}
-                onChange={handleInputChange}
-                placeholder="Booking Reference No."
+            <Field.Root invalid={!!errors.bookingType}>
+              <Field.Label>Booking Type</Field.Label>
+              <Controller
+                control={control}
+                name="bookingType"
+                render={({ field }) => (
+                  <SelectRoot
+                    name={field.name}
+                    // value={field.value}
+                    onValueChange={({ value }) => field.onChange(value)}
+                    onInteractOutside={() => field.onBlur()}
+                    collection={bookingType}
+                  >
+                    <SelectTrigger>
+                      <SelectValueText placeholder="Select booking type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {bookingType.items.map((type) => (
+                        <SelectItem item={type} key={type.value}>
+                          {type.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </SelectRoot>
+                )}
               />
+              <Field.ErrorText>{errors.bookingType?.message}</Field.ErrorText>
             </Field.Root>
 
             <Field.Root>
               <Field.Label>Purpose of Visit</Field.Label>
               <Input
-                name="purposeOfVisit"
-                value={formData.purposeOfVisit}
-                onChange={handleInputChange}
+                {...register("purposeOfVisit")}
                 placeholder="Purpose of Visit"
               />
             </Field.Root>
@@ -170,9 +139,7 @@ const BookRoom = () => {
             <Field.Root gridColumn={{ md: "span 2", lg: "span 3" }}>
               <Field.Label>Remarks</Field.Label>
               <Textarea
-                name="remarks"
-                value={formData.remarks}
-                onChange={handleInputChange}
+                {...register("remarks")}
                 placeholder="Remarks"
                 rows={3}
               />
@@ -181,223 +148,165 @@ const BookRoom = () => {
         </Card.Body>
       </Card.Root>
 
-      {/* Room Details sCard. */}
-      <Card.Root mb={6}>
+      <Card.Root shadow={"lg"} mb={6}>
         <Card.Header>
           <Heading size="md">Room Details</Heading>
         </Card.Header>
         <Card.Body>
           <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={6}>
-            <Field.Root required>
+            <Field.Root invalid={!!errors.roomType}>
               <Field.Label>Room Type</Field.Label>
-              {/* <Select
+              <Controller
+                control={control}
                 name="roomType"
-                value={formData.roomType}
-                onChange={handleInputChange}
-                placeholder="Choose Room Type"
-              >
-                <option value="single">Single</option>
-                <option value="double">Double</option>
-                <option value="suite">Suite</option>
-              </Select> */}
+                render={({ field }) => (
+                  <SelectRoot
+                    name={field.name}
+                    value={field.value}
+                    onValueChange={({ value }) => field.onChange(value)}
+                    onInteractOutside={() => field.onBlur()}
+                    collection={roomType}
+                  >
+                    <SelectTrigger>
+                      <SelectValueText placeholder="Select room type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {roomType.items.map((type) => (
+                        <SelectItem item={type} key={type.value}>
+                          {type.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </SelectRoot>
+                )}
+              />
+              <Field.ErrorText>{errors.roomType?.message}</Field.ErrorText>
             </Field.Root>
 
-            <Field.Root required>
+            <Field.Root invalid={!!errors.roomNo}>
               <Field.Label>Room No</Field.Label>
-              {/* <Select name="roomNo" value={formData.roomNo} onChange={handleInputChange} placeholder="Choose Room No">
-                <option value="101">101</option>
-                <option value="102">102</option>
-                <option value="103">103</option>
-              </Select> */}
+              <Input {...register("roomNo")} placeholder="Room Number" />
+              <Field.ErrorText>{errors.roomNo?.message}</Field.ErrorText>
             </Field.Root>
 
-            <Field.Root>
+            <Field.Root invalid={!!errors.adults}>
               <Field.Label>Adults</Field.Label>
-              {/* <NumberInputRoot min={0} max={10} defaultValue={"0"}>
-                <NumberInput name="adults" value={formData.adults} onChange={handleInputChange} />
-                <NumberInputStepper>
-                  <NumberIncrementStepper />
-                  <NumberDecrementStepper />
-                </NumberInputStepper>
-              </NumberInput> */}
+              <Input type="number" {...register("adults")} />
+              <Field.ErrorText>{errors.adults?.message}</Field.ErrorText>
             </Field.Root>
 
-            <Field.Root>
+            <Field.Root invalid={!!errors.children}>
               <Field.Label>Children</Field.Label>
-              {/* <NumberInput min={0} max={10} defaultValue={0}>
-                <NumberInputField name="children" value={formData.children} onChange={handleInputChange} />
-                <NumberInputStepper>
-                  <NumberIncrementStepper />
-                  <NumberDecrementStepper />
-                </NumberInputStepper>
-              </NumberInput> */}
+              <Input type="number" {...register("children")} />
+              <Field.ErrorText>{errors.children?.message}</Field.ErrorText>
             </Field.Root>
           </Grid>
         </Card.Body>
       </Card.Root>
 
-      {/* Customer Details Card. */}
-      <Card.Root mb={6}>
+      <Card.Root shadow={"lg"} mb={6}>
         <Card.Header>
           <Heading size="md">Customer Details</Heading>
         </Card.Header>
         <Card.Body>
           <Grid templateColumns={{ base: "1fr", md: "repeat(2, 1fr)" }} gap={6}>
-            <Field.Root required>
+            <Field.Root invalid={!!errors.firstName}>
               <Field.Label>First Name</Field.Label>
-              <Input
-                name="firstName"
-                value={formData.firstName}
-                onChange={handleInputChange}
-                placeholder="First Name"
-              />
+              <Input {...register("firstName")} placeholder="First Name" />
+              <Field.ErrorText>{errors.firstName?.message}</Field.ErrorText>
             </Field.Root>
 
-            <Field.Root required>
+            <Field.Root invalid={!!errors.lastName}>
               <Field.Label>Last Name</Field.Label>
-              <Input
-                name="lastName"
-                value={formData.lastName}
-                onChange={handleInputChange}
-                placeholder="Last Name"
-              />
+              <Input {...register("lastName")} placeholder="Last Name" />
+              <Field.ErrorText>{errors.lastName?.message}</Field.ErrorText>
             </Field.Root>
 
-            <Field.Root required>
+            <Field.Root invalid={!!errors.email}>
               <Field.Label>Email</Field.Label>
-              <Input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleInputChange}
-                placeholder="Email"
-              />
+              <Input type="email" {...register("email")} placeholder="Email" />
+              <Field.ErrorText>{errors.email?.message}</Field.ErrorText>
             </Field.Root>
 
-            <Field.Root required>
+            <Field.Root invalid={!!errors.phone}>
               <Field.Label>Phone</Field.Label>
-              <Input
-                type="tel"
-                name="phone"
-                value={formData.phone}
-                onChange={handleInputChange}
-                placeholder="Phone"
-              />
+              <Input type="tel" {...register("phone")} placeholder="Phone" />
+              <Field.ErrorText>{errors.phone?.message}</Field.ErrorText>
             </Field.Root>
 
-            <Field.Root gridColumn={{ md: "span 2" }}>
+            <Field.Root
+              gridColumn={{ md: "span 2" }}
+              invalid={!!errors.address}
+            >
               <Field.Label>Address</Field.Label>
-              <Textarea
-                name="address"
-                value={formData.address}
-                onChange={handleInputChange}
-                placeholder="Address"
-              />
+              <Textarea {...register("address")} placeholder="Address" />
+              <Field.ErrorText>{errors.address?.message}</Field.ErrorText>
             </Field.Root>
 
-            <Field.Root>
+            <Field.Root invalid={!!errors.city}>
               <Field.Label>City</Field.Label>
-              <Input
-                name="city"
-                value={formData.city}
-                onChange={handleInputChange}
-                placeholder="City"
-              />
+              <Input {...register("city")} placeholder="City" />
+              <Field.ErrorText>{errors.city?.message}</Field.ErrorText>
             </Field.Root>
 
-            <Field.Root>
+            <Field.Root invalid={!!errors.country}>
               <Field.Label>Country</Field.Label>
-              {/* <Select name="country" value={formData.country} onChange={handleInputChange} placeholder="Select Country">
-                <option value="us">United States</option>
-                <option value="uk">United Kingdom</option>
-                <option value="ca">Canada</option>
-              </Select> */}
+              <Input {...register("country")} placeholder="Country" />
+              <Field.ErrorText>{errors.country?.message}</Field.ErrorText>
             </Field.Root>
           </Grid>
         </Card.Body>
       </Card.Root>
 
-      {/* Additional Form Elements Card. */}
-      <Card.Root mb={6}>
+      <Card.Root shadow={"lg"} mb={6}>
         <Card.Header>
           <Heading size="md">Additional Details</Heading>
         </Card.Header>
         <Card.Body>
-          <VStack gap={6} align="stretch">
-            <Field.Root>
-              <Field.Label>Payment Method</Field.Label>
-              <RadioGroupRoot
-                name="paymentMethod"
-                // onChange={(value) =>
-                //     setFormData(
-                //     (prev) => ({ ...prev, paymentMethod: value })
-                // )}
-              >
-                <Stack direction="row" gap={4}>
-                  <Radio value="credit">Credit Card.</Radio>
-                  <Radio value="debit">Debit Card.</Radio>
-                  <Radio value="cash">Cash</Radio>
-                </Stack>
-              </RadioGroupRoot>
-            </Field.Root>
-
-            <Field.Root>
-              <Field.Label>Special Requests</Field.Label>
-              <Stack gap={2}>
-                <CheckboxRoot
-                //   onChange={(e) => {
-                //     const value = "earlyCheckIn"
-                //     setFormData((prev) => ({
-                //       ...prev,
-                //       specialRequests: e.target.checked
-                //         ? [...prev.specialRequests, value]
-                //         : prev.specialRequests.filter((item) => item !== value),
-                //     }))
-                //   }}
+          <Fieldset.Root invalid={!!errors.paymentMethod}>
+            <Fieldset.Legend>Payment Method</Fieldset.Legend>
+            <Controller
+              name="paymentMethod"
+              control={control}
+              render={({ field }) => (
+                <RadioGroup.Root
+                  name={field.name}
+                  value={field.value}
+                  onValueChange={({ value }) => {
+                    field.onChange(value);
+                  }}
                 >
-                  Early Check-in
-                </CheckboxRoot>
-                <CheckboxRoot
-                //   onChange={(e) => {
-                //     const value = "lateCheckOut"
-                //     setFormData((prev) => ({
-                //       ...prev,
-                //       specialRequests: e.target.checked
-                //         ? [...prev.specialRequests, value]
-                //         : prev.specialRequests.filter((item) => item !== value),
-                //     }))
-                //   }}
-                >
-                  Late Check-out
-                </CheckboxRoot>
-              </Stack>
-            </Field.Root>
-
-            <Field.Root display="flex" alignItems="center">
-              <Field.Label mb="0">Subscribe to Newsletter</Field.Label>
-              <SwitchRoot
-                name="newsletter"
-                checked={formData.newsletter}
-                onChange={(e) => setFormData((prev) => ({ ...prev }))}
-              />
-            </Field.Root>
-
-            <Field.Root>
-              <CheckboxRoot
-                name="termsAccepted"
-                checked={formData.termsAccepted}
-                onChange={(e) => setFormData((prev) => ({ ...prev }))}
-              >
-                I accept the terms and conditions
-              </CheckboxRoot>
-            </Field.Root>
-          </VStack>
+                  {/* <HStack gap="6"> */}
+                  <Flex gap={6}>
+                    {paymentMethod.items.map((item) => (
+                      <Radio
+                        key={item.value}
+                        value={item.value}
+                        inputProps={{ onBlur: field.onBlur }}
+                      >
+                        {item.label}
+                      </Radio>
+                    ))}
+                  </Flex>
+                  {/* </HStack> */}
+                </RadioGroup.Root>
+              )}
+            />
+            <FieldsetErrorText>
+              {errors.paymentMethod?.message}
+            </FieldsetErrorText>
+          </Fieldset.Root>
         </Card.Body>
       </Card.Root>
 
-      <Button type="submit" colorScheme="blue" size="lg" width="full">
-        Submit Booking
-      </Button>
+      <Flex justifyContent={"end"} gap={4}>
+        <Button size="md" variant={"outline"} type="reset">
+          Cancel
+        </Button>
+        <Button size="md" type="submit">
+          Submit
+        </Button>
+      </Flex>
     </Box>
   );
 };
