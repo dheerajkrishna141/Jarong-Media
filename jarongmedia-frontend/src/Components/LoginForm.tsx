@@ -1,19 +1,24 @@
+import { CONSTANTS } from "@/constants/AppConstants";
+import useLocalStorage from "@/hooks/useLocalStorage";
+import userDTOFunction from "@/services/httpUserService";
 import {
   Box,
   Button,
   Card,
-  Icon,
+  Field,
   Image,
   Input,
-  Separator,
   Stack,
   VStack,
-  Field,
 } from "@chakra-ui/react";
-import google from "../assets/google.jpeg";
-import { INVALID, z } from "zod";
-import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
+import { z } from "zod";
+import google from "../assets/google.jpeg";
+import { toaster } from "./UI/toaster";
+import { useEffect } from "react";
+import UserService from "@/services/UserService";
 
 const schema = z.object({
   email: z.string().email({ message: "Enter a valid Email" }),
@@ -29,31 +34,74 @@ interface userLogin {
   password: string;
 }
 const LoginForm = () => {
+  const { setItem: setUser } = useLocalStorage(CONSTANTS.USER_STORAGE_KEY);
+  const {
+    setItem: setUserStatus,
+    getItem: getUserStatus,
+    clear: clearUserStatus,
+  } = useLocalStorage(CONSTANTS.USER_STATUS_KEY);
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (getUserStatus()) {
+      UserService.logout().then(() => {
+        toaster.create({
+          type: "info",
+          title: "Session Invalid!",
+          description: "Previous session was either expired or invalidated.",
+          duration: 5 * 1000, //5 seconds
+        });
+      });
+      clearUserStatus();
+    }
+  }, [getUserStatus()]);
+
   const handleLogin = (data: userLogin) => {
-    //handle login
+    const userFunction = userDTOFunction("/user");
+    userFunction
+      .login({
+        auth: {
+          username: data.email,
+          password: data.password,
+        },
+      })
+      .then((data) => {
+        setUser(data.endUser);
+        setUserStatus(data.status);
+        if (data.endUser.roles[0].authority === "ROLE_ADMIN") {
+          navigate("/admin", { replace: true });
+        }
+      })
+      .catch((data) => {
+        if (data.response.data.message === CONSTANTS.USER_NOT_VERIFIED) {
+          navigate("/email/verify");
+        }
+        toaster.create({
+          title: data.response.data.message,
+          type: "error",
+        });
+      });
   };
 
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
   return (
     <div>
-      <VStack spaceY={10} mb={10}>
+      <VStack spaceY={10} mb={10} mt={{ base: 0, lg: 150 }}>
         <Card.Root w={{ base: "500px", lg: "700" }}>
           <Card.Header>
-            <Card.Title>Sign up</Card.Title>
-            <Card.Description>
-              Fill in the form below to create an account
-            </Card.Description>
+            <Card.Title>Sign in</Card.Title>
           </Card.Header>
           <form
             onSubmit={handleSubmit((data) => {
               handleLogin(data);
-              // reset();
             })}
           >
             <Card.Body>
@@ -76,7 +124,13 @@ const LoginForm = () => {
               </Stack>
             </Card.Body>
             <Card.Footer justifyContent="flex-end">
-              <Button variant="outline" type="reset">
+              <Button
+                variant="outline"
+                type="reset"
+                onClick={() => {
+                  reset();
+                }}
+              >
                 Cancel
               </Button>
               <Button variant="solid" type="submit">

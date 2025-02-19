@@ -20,6 +20,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useController, useForm } from "react-hook-form";
 import { z } from "zod";
 import { Checkbox } from "./UI/checkbox";
+import { useEffect, useState } from "react";
+import { featureDTO } from "./AddFeature";
+import HotelService from "@/services/HotelService";
+import { hotelDTO } from "./AddHotel";
+import { toaster } from "./UI/toaster";
 
 const formSchema = z.object({
   name: z.string().min(5, { message: "Enter atleast 5 characters" }),
@@ -43,12 +48,18 @@ const category = createListCollection({
   ],
 });
 
-const items = [
-  { label: "React", value: "react" },
-  { label: "Svelte", value: "svelte" },
-  { label: "Vue", value: "vue" },
-  { label: "Angular", value: "angular" },
-];
+export interface roomDTO {
+  id: string;
+  category: string;
+  features: string[];
+  hotelId: string;
+  pricePerNight: number;
+}
+
+export interface hotelDTOWithId extends hotelDTO {
+  id: string;
+}
+
 const AddRoom = () => {
   const {
     handleSubmit,
@@ -59,14 +70,67 @@ const AddRoom = () => {
     resolver: zodResolver(formSchema),
   });
 
-  const onSubmit = handleSubmit((data) => console.log(data));
+  const [featureInfo, setFeatureInfo] = useState<featureDTO[]>([]);
+  const [hotelInfo, setHotelInfo] = useState<hotelDTOWithId[]>([]);
+
+  useEffect(() => {
+    HotelService.getFeatures().then((data) => {
+      setFeatureInfo(data);
+    });
+
+    HotelService.getHotels().then((data) => {
+      setHotelInfo(data);
+    });
+  }, []);
+
+  const hotels = createListCollection({
+    items: hotelInfo.map((hotel) => ({
+      label: hotel.name,
+      value: hotel.id,
+    })),
+  });
+
+  const handleRoomSubmit = (data: FormValues) => {
+    const processedData: roomDTO = {
+      hotelId: data.hotel[0],
+      category: data.category[0],
+      features: [],
+      id: data.name,
+      pricePerNight: parseFloat(data.price),
+    };
+    data.feature.forEach((feature) => processedData.features.push(feature));
+    HotelService.addRoom({
+      data: processedData,
+    })
+      .then(() => {
+        toaster.create({
+          type: "success",
+          description: "Room Added Successfully!",
+          duration: 5 * 1000, //5seconds
+        });
+      })
+      .catch((res) => {
+        toaster.create({
+          title: "Error Adding Room",
+          type: "error",
+          description: res.response.data.message,
+          duration: 5 * 1000, //5 seconds
+        });
+      });
+  };
+
   const feature = useController({
     control,
     name: "feature",
     defaultValue: [],
   });
+
   return (
-    <form onSubmit={onSubmit}>
+    <form
+      onSubmit={handleSubmit((data) => {
+        handleRoomSubmit(data);
+      })}
+    >
       <Card.Root mb={6} shadow={"md"}>
         <Card.Header>
           <Heading size="2xl">Room Details</Heading>
@@ -115,7 +179,7 @@ const AddRoom = () => {
               <Field.ErrorText>{errors.category?.message}</Field.ErrorText>
             </Field.Root>
 
-            <Field.Root invalid={!!errors.category}>
+            <Field.Root invalid={!!errors.hotel}>
               <Field.Label>Hotel</Field.Label>
               <Controller
                 control={control}
@@ -126,15 +190,15 @@ const AddRoom = () => {
                     value={field.value}
                     onValueChange={({ value }) => field.onChange(value)}
                     onInteractOutside={() => field.onBlur()}
-                    collection={category}
+                    collection={hotels}
                   >
                     <SelectTrigger>
                       <SelectValueText placeholder="Select Hotel" />
                     </SelectTrigger>
                     <SelectContent>
-                      {category.items.map((movie: any) => (
-                        <SelectItem item={movie} key={movie.value}>
-                          {movie.label}
+                      {hotels.items.map((hotel) => (
+                        <SelectItem item={hotel} key={hotel.value}>
+                          {hotel.label}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -145,7 +209,7 @@ const AddRoom = () => {
             </Field.Root>
 
             <Fieldset.Root invalid={!!errors.feature}>
-              <Fieldset.Legend>Select your framework</Fieldset.Legend>
+              <Fieldset.Legend>Select features</Fieldset.Legend>
 
               <CheckboxGroup
                 invalid={!!errors.feature}
@@ -154,9 +218,9 @@ const AddRoom = () => {
                 name={feature.field.name}
               >
                 <Fieldset.Content>
-                  {items.map((item) => (
-                    <Checkbox key={item.value} value={item.value}>
-                      {item.label}
+                  {featureInfo.map((item) => (
+                    <Checkbox key={item.id} value={item.id}>
+                      {item.id}
                     </Checkbox>
                   ))}
                 </Fieldset.Content>

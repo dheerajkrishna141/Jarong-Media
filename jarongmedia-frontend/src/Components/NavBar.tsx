@@ -1,20 +1,17 @@
-import React from "react";
-import { ColorModeButton, useColorMode } from "./UI/color-mode";
 import {
   Box,
-  Flex,
   HStack,
-  IconButton,
   Image,
   Input,
   Show,
   useBreakpointValue,
 } from "@chakra-ui/react";
+import { FiSearch } from "react-icons/fi";
 import logo from "../assets/logo.jpg";
 import Drawer from "./Drawer";
-import { FiSearch } from "react-icons/fi";
-import { InputGroup } from "./UI/input-group";
 import ProfilePop from "./ProfilePop";
+import { ColorModeButton, useColorMode } from "./UI/color-mode";
+import { InputGroup } from "./UI/input-group";
 const NavBar = () => {
   const isSmallScreen = useBreakpointValue({ base: true, lg: false });
 

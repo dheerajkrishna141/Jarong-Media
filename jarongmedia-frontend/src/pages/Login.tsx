@@ -24,14 +24,18 @@ const Login = () => {
     >
       <GridItem>
         <Box className="flex justify-center">
-          <VStack>
+          <VStack mt={{ base: 0, lg: 150 }}>
             <Image src={login} h={"300px"}></Image>
             <Text>Welcome to jarong media. Best Hotels, at Best Prices</Text>
           </VStack>
         </Box>
       </GridItem>
       <GridItem>
-        <Separator variant={"solid"} size={"lg"}></Separator>
+        <Separator
+          variant={"solid"}
+          orientation={{ base: "horizontal", lg: "vertical" }}
+          size={"lg"}
+        ></Separator>
       </GridItem>
       <GridItem className="flex justify-center" mt={{ base: 20, lg: 0 }}>
         <LoginForm></LoginForm>

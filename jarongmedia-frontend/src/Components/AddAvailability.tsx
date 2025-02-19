@@ -1,3 +1,4 @@
+import HotelService from "@/services/HotelService";
 import {
   Box,
   Button,
@@ -14,13 +15,16 @@ import {
   SelectValueText,
 } from "@chakra-ui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
+import { hotelDTOWithId, roomDTO } from "./AddRoom";
+import { toaster } from "./UI/toaster";
 
 const formSchema = z
   .object({
-    roomId: z.string().min(1, { message: "Room Id is required" }),
-    hotelId: z.string().min(1, { message: "Hotel Id is required" }),
+    roomId: z.array(z.string().min(1, { message: "Hotel is required" })),
+    hotel: z.array(z.string().min(1, { message: "Hotel is required" })),
 
     checkInDate: z.string({ required_error: "Check In Date is required" }),
     checkOutDate: z.string({ required_error: "Check Out Date is required" }),
@@ -40,6 +44,14 @@ const formSchema = z
 
 type FormValues = z.infer<typeof formSchema>;
 
+export interface availabilityDTO {
+  roomId: string;
+  hotelId: string;
+  status: string;
+  checkInDate: string;
+  checkOutDate: string;
+}
+
 const AddAvailability = () => {
   const {
     control,
@@ -50,18 +62,73 @@ const AddAvailability = () => {
     resolver: zodResolver(formSchema),
   });
 
+  const [hotelInfo, setHotelInfo] = useState<hotelDTOWithId[]>([]);
+  const [roomInfo, setRoomInfo] = useState<roomDTO[]>([]);
+
+  useEffect(() => {
+    HotelService.getRooms().then((data) => {
+      setRoomInfo(data);
+    });
+
+    HotelService.getHotels().then((data) => {
+      setHotelInfo(data);
+    });
+  }, []);
+
+  const hotels = createListCollection({
+    items: hotelInfo.map((hotel) => ({
+      label: hotel.name,
+      value: hotel.id,
+    })),
+  });
+  const rooms = createListCollection({
+    items: roomInfo.map((room) => ({
+      label: room.id,
+      value: room.id,
+    })),
+  });
+
   const status = createListCollection({
     items: [
       { label: "Available", value: "available" },
       { label: "Booked", value: "booked" },
     ],
   });
+
+  const handleAvailabilitySubmit = (data: FormValues) => {
+    const processedData: availabilityDTO = {
+      hotelId: data.hotel[0],
+      roomId: data.roomId[0],
+      checkInDate: data.checkInDate,
+      checkOutDate: data.checkOutDate,
+      status: data.status[0],
+    };
+
+    HotelService.addAvailability({
+      data: processedData,
+    })
+      .then(() => {
+        toaster.create({
+          type: "success",
+          description: "Availability Added Successfully!",
+          duration: 5 * 1000, //5seconds
+        });
+      })
+      .catch((res) => {
+        toaster.create({
+          title: "Error Adding Availability",
+          type: "error",
+          description: res.response.data.message,
+          duration: 5 * 1000, //5 seconds
+        });
+      });
+  };
   return (
     <div>
       <Box
         as="form"
         onSubmit={handleSubmit((data) => {
-          console.log(data);
+          handleAvailabilitySubmit(data);
         })}
         p={4}
       >
@@ -82,17 +149,62 @@ const AddAvailability = () => {
               }}
               gap={6}
             >
-              <Field.Root invalid={errors.roomId ? true : false}>
+              <Field.Root invalid={!!errors.roomId}>
                 <Field.Label>Room Id</Field.Label>
-                <Input type="text" {...register("roomId")} />
+                <Controller
+                  control={control}
+                  name="roomId"
+                  render={({ field }) => (
+                    <SelectRoot
+                      name={field.name}
+                      value={field.value}
+                      onValueChange={({ value }) => field.onChange(value)}
+                      onInteractOutside={() => field.onBlur()}
+                      collection={rooms}
+                    >
+                      <SelectTrigger>
+                        <SelectValueText placeholder="Select Hotel" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {rooms.items.map((room) => (
+                          <SelectItem item={room} key={room.value}>
+                            {room.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </SelectRoot>
+                  )}
+                />
                 <Field.ErrorText>{errors.roomId?.message}</Field.ErrorText>
               </Field.Root>
-              <Field.Root invalid={errors.hotelId ? true : false}>
-                <Field.Label>Hotel Id</Field.Label>
-                <Input type="text" {...register("hotelId")} />
-                <Field.ErrorText>{errors.hotelId?.message}</Field.ErrorText>
+              <Field.Root invalid={!!errors.hotel}>
+                <Field.Label>Hotel</Field.Label>
+                <Controller
+                  control={control}
+                  name="hotel"
+                  render={({ field }) => (
+                    <SelectRoot
+                      name={field.name}
+                      value={field.value}
+                      onValueChange={({ value }) => field.onChange(value)}
+                      onInteractOutside={() => field.onBlur()}
+                      collection={hotels}
+                    >
+                      <SelectTrigger>
+                        <SelectValueText placeholder="Select Hotel" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {hotels.items.map((hotel) => (
+                          <SelectItem item={hotel} key={hotel.value}>
+                            {hotel.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </SelectRoot>
+                  )}
+                />
+                <Field.ErrorText>{errors.hotel?.message}</Field.ErrorText>
               </Field.Root>
-
               <Field.Root invalid={errors.checkInDate ? true : false}>
                 <Field.Label>Check In Date</Field.Label>
                 <Input type="date" {...register("checkInDate")} />
@@ -105,7 +217,6 @@ const AddAvailability = () => {
                   {errors.checkOutDate?.message}
                 </Field.ErrorText>
               </Field.Root>
-
               <Field.Root invalid={!!errors.status}>
                 <Field.Label>Status</Field.Label>
                 <Controller

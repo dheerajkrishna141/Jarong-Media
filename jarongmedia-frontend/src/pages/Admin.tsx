@@ -1,5 +1,7 @@
 import DrawerElements from "@/Components/DrawerElements";
 import NavBar from "@/Components/NavBar";
+import { CONSTANTS } from "@/constants/AppConstants";
+import useLocalStorage from "@/hooks/useLocalStorage";
 import {
   Box,
   Container,
@@ -8,11 +10,17 @@ import {
   Show,
   useBreakpointValue,
 } from "@chakra-ui/react";
-import { Outlet } from "react-router-dom";
+import { useEffect } from "react";
+import { Navigate, Outlet } from "react-router-dom";
 
 const Admin = () => {
+  const { getItem: getUserStatus } = useLocalStorage(CONSTANTS.USER_STATUS_KEY);
+  useEffect(() => {});
   const isLargeScreen = useBreakpointValue({ base: false, lg: true });
 
+  if (!getUserStatus()) {
+    return <Navigate to={"/login"}></Navigate>;
+  }
   return (
     <Box>
       <NavBar></NavBar>

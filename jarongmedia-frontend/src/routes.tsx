@@ -14,6 +14,8 @@ import Roombook from "./Components/Roombook";
 import Admin from "./pages/Admin";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
+import EmailVerify from "./pages/EmailVerify";
 
 const routes = createBrowserRouter([
   {
@@ -27,6 +29,14 @@ const routes = createBrowserRouter([
       {
         path: "/login",
         element: <Login></Login>,
+      },
+      {
+        path: "/register",
+        element: <Register></Register>,
+      },
+      {
+        path: "/user/verify",
+        element: <EmailVerify></EmailVerify>,
       },
       {
         path: "/admin",

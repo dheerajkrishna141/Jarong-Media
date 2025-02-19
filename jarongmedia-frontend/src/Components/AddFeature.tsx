@@ -1,3 +1,4 @@
+import HotelService from "@/services/HotelService";
 import {
   Box,
   Button,
@@ -20,6 +21,7 @@ import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { MdDeleteForever } from "react-icons/md";
 import { z } from "zod";
+import { toaster } from "./UI/toaster";
 
 const categorySchema = z.object({
   name: z.string().min(1, { message: "Category name is required" }),
@@ -40,12 +42,22 @@ const formSchema = z.object({
   bed: z.array(z.string().min(1, { message: "Hotel is required" })),
 });
 
+export interface featureDTO {
+  id: string;
+  categorical_features: {
+    [name: string]: string;
+  };
+  area: string;
+  bed_type: string;
+}
+
 type FormValues = z.infer<typeof formSchema>;
 
 const AddFeature = () => {
   const {
     handleSubmit,
     register,
+    reset,
     formState: { errors },
     control,
   } = useForm<FormValues>({
@@ -69,18 +81,43 @@ const AddFeature = () => {
   });
 
   const onSubmit = handleSubmit((data) => {
-    const processedData = {
-      ...data,
-      categories: data.categories.map((category) => ({
-        ...category,
-        values: category.values.split(",").map((item) => item.trim()),
-      })),
+    const processedData: featureDTO = {
+      area: data.area,
+      bed_type: data.bed[0],
+      id: data.name,
+      categorical_features: {},
     };
-    console.log(processedData);
+
+    data.categories.forEach(
+      (category) =>
+        (processedData.categorical_features[category.name] = category.values)
+    );
+
+    HotelService.addFeature({
+      data: processedData,
+    })
+      .then(() => {
+        reset();
+        toaster.create({
+          title: "Feature Added successfully!",
+          type: "success",
+          duration: 5 * 1000, //5 seconds
+        });
+      })
+      .catch((res) => {
+        console.log(res);
+
+        toaster.create({
+          title: "Error Adding Feature",
+          type: "error",
+          description: res.response.data.message,
+          duration: 5 * 1000, //5 seconds
+        });
+      });
   });
 
   return (
-    <form onSubmit={onSubmit}>
+    <Box mb={5} as="form" onSubmit={onSubmit}>
       <Heading size={"3xl"} mb={6}>
         Add Feature
       </Heading>
@@ -104,7 +141,7 @@ const AddFeature = () => {
             </Field.Root>
 
             <Field.Root required invalid={errors.area ? true : false}>
-              <Field.Label>Area</Field.Label>
+              <Field.Label>Area (in SFT)</Field.Label>
               <Input type="number" {...register("area")} />
               <Field.ErrorText>{errors.area?.message}</Field.ErrorText>
             </Field.Root>
@@ -213,7 +250,7 @@ const AddFeature = () => {
           Submit
         </Button>
       </Flex>
-    </form>
+    </Box>
   );
 };
 
