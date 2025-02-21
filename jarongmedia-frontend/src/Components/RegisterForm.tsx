@@ -19,6 +19,7 @@ import { z } from "zod";
 import google from "../assets/google.jpeg";
 import UserService from "@/services/UserService";
 import { toaster } from "./UI/toaster";
+import { CONSTANTS } from "@/constants/AppConstants";
 
 const schema = z
   .object({
@@ -55,7 +56,7 @@ const RegisterForm = () => {
     const regPromise = UserService.register({
       data: data,
     }).then(() => {
-      navigate("/user/login");
+      navigate("/login");
     });
 
     toaster.promise(regPromise, {
@@ -96,7 +97,7 @@ const RegisterForm = () => {
           </Card.Header>
           <form
             onSubmit={handleSubmit((data) => {
-              handleRegister({ ...data, role: ["USER_ROLE"] });
+              handleRegister({ ...data, roles: [CONSTANTS.ADMIN_ROLE] });
             })}
           >
             <Card.Body>

@@ -16,6 +16,9 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import EmailVerify from "./pages/EmailVerify";
+import PaymentPage from "./pages/PaymentPage";
+import BookingConfirmation from "./pages/BookingConfirmation";
+import AllBookings from "./Components/AllBookings";
 
 const routes = createBrowserRouter([
   {
@@ -91,6 +94,18 @@ const routes = createBrowserRouter([
           {
             path: "availability",
             element: <Availability></Availability>,
+          },
+          {
+            path: "checkout",
+            element: <PaymentPage></PaymentPage>,
+          },
+          {
+            path: "viewBookings",
+            element: <AllBookings></AllBookings>,
+          },
+          {
+            path: "bookingConfirmation",
+            element: <BookingConfirmation></BookingConfirmation>,
           },
         ],
       },

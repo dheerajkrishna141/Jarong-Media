@@ -44,7 +44,7 @@ const LoginForm = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (getUserStatus()) {
+    if (!getUserStatus()) {
       UserService.logout().then(() => {
         toaster.create({
           type: "info",
@@ -75,7 +75,7 @@ const LoginForm = () => {
       })
       .catch((data) => {
         if (data.response.data.message === CONSTANTS.USER_NOT_VERIFIED) {
-          navigate("/email/verify");
+          navigate("/user/verify");
         }
         toaster.create({
           title: data.response.data.message,

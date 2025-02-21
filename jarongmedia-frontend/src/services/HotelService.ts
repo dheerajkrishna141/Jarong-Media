@@ -1,4 +1,4 @@
-import hotelDTOFunction from "./httpHotelService";
+import { hotelDTOFunction } from "./httpHotelService";
 
 const HotelService = hotelDTOFunction("/admin/hotel");
 

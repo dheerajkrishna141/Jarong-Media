@@ -25,6 +25,7 @@ import { featureDTO } from "./AddFeature";
 import HotelService from "@/services/HotelService";
 import { hotelDTO } from "./AddHotel";
 import { toaster } from "./UI/toaster";
+import { availabilityDTO } from "./AddAvailability";
 
 const formSchema = z.object({
   name: z.string().min(5, { message: "Enter atleast 5 characters" }),
@@ -54,6 +55,7 @@ export interface roomDTO {
   features: string[];
   hotelId: string;
   pricePerNight: number;
+  availability: availabilityDTO[];
 }
 
 export interface hotelDTOWithId extends hotelDTO {
@@ -97,6 +99,7 @@ const AddRoom = () => {
       features: [],
       id: data.name,
       pricePerNight: parseFloat(data.price),
+      availability: [],
     };
     data.feature.forEach((feature) => processedData.features.push(feature));
     HotelService.addRoom({
@@ -205,7 +208,7 @@ const AddRoom = () => {
                   </SelectRoot>
                 )}
               />
-              <Field.ErrorText>{errors.category?.message}</Field.ErrorText>
+              <Field.ErrorText>{errors.hotel?.message}</Field.ErrorText>
             </Field.Root>
 
             <Fieldset.Root invalid={!!errors.feature}>

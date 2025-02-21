@@ -8,7 +8,7 @@ const useLocalStorage = (key: string) => {
   };
 
   const clear = () => {
-    return window.localStorage.clear();
+    return window.localStorage.removeItem(key);
   };
 
   return { setItem, getItem, clear };

@@ -7,10 +7,12 @@ export interface user {
   email: string;
   dob?: string;
 }
-
+export interface userWithId extends user {
+  id: number;
+}
 export interface userRegister extends user {
   password: string;
-  role: string[];
+  roles: string[];
 }
 
 interface fetchedUser {

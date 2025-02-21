@@ -4,21 +4,12 @@ import {
   Card,
   Flex,
   Grid,
-  GridItem,
   Heading,
-  HStack,
-  Input,
-  Select,
   Stack,
-  Table,
-  TableBody,
-  TableHeader,
-  TableRow,
   Text,
 } from "@chakra-ui/react";
-import React from "react";
 import { IoChevronUpCircleOutline } from "react-icons/io5";
-import ProfilePop from "./ProfilePop";
+import ViewTodaysBookings from "./ViewTodaysBookings";
 
 const metrics = [
   {
@@ -90,43 +81,8 @@ export const Dashboard = () => {
             </Card.Root>
           ))}
         </Grid>
-        <Card.Root shadow={"lg"} mb={6}>
-          <Card.Header>
-            <Heading size="md">Reservations</Heading>
-          </Card.Header>
-          <Card.Body>
-            <Box h="400px">
-              {/* <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="Booking Confirmed" fill="#BE185D" />
-                    <Line type="monotone" dataKey="Booking Pending" stroke="#F97316" strokeWidth={2} />
-                  </BarChart>
-                </ResponsiveContainer> */}
-            </Box>
-          </Card.Body>
-        </Card.Root>
-        <Card.Root shadow={"lg"}>
-          <Card.Header>
-            <Heading size="md">Today Booking List</Heading>
-          </Card.Header>
-          <Card.Body>
-            <Flex justify="space-between" mb={4}>
-              <Flex align="center" gap={2}>
-                <Text>Show</Text>
-                <Text>entries</Text>
-              </Flex>
-              <Flex align="center" gap={2}>
-                <Text>Search:</Text>
-                <Input w="200px" />
-              </Flex>
-            </Flex>
-          </Card.Body>
-        </Card.Root>
+
+        <ViewTodaysBookings></ViewTodaysBookings>
       </Box>
     </>
   );

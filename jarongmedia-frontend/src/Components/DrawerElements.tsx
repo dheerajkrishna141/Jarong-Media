@@ -9,12 +9,17 @@ import { Link, useNavigate } from "react-router-dom";
 const elements = [
   { value: "Dashboard", icon: "dashboard", navigateTo: "/" },
   { value: "Hotels", icon: "house", navigateTo: "/hotel" },
-  { value: "Room", icon: "door", navigateTo: "" },
+  { value: "Room", icon: "door", navigateTo: "/" },
   { value: "Feature List", icon: "features", navigateTo: "/features" },
-  { value: "Room List", icon: "roomlist", navigateTo: "/roomList" },
+  { value: "View Bookings", icon: "bookings", navigateTo: "/viewBookings" },
   { value: "Promocode", icon: "promocode", navigateTo: "/promocodes" },
 ];
 
+const collapsibleElements = [
+  { value: "Book Room", icon: "door", navigateTo: "/bookRoom" },
+  { value: "View Availability", icon: "doorOpen", navigateTo: "/availability" },
+  { value: "Room List", icon: "roomlist", navigateTo: "/roomList" },
+];
 const getIcon = (icon: string) => {
   switch (icon) {
     case "dashboard":
@@ -23,9 +28,13 @@ const getIcon = (icon: string) => {
       return <LuHouse />;
     case "door":
       return <LuDoorClosed />;
+    case "doorOpen":
+      return <LuDoorOpen />;
     case "features":
       return <ImAccessibility />;
     case "roomlist":
+      return <IoList />;
+    case "bookings":
       return <IoList />;
     case "promocode":
       return <RiCouponFill />;
@@ -53,28 +62,17 @@ const DrawerElements = () => {
             </Button>
           </Collapsible.Trigger>
           <Collapsible.Content>
-            <Button
-              size={"lg"}
-              key={"bookRoom"}
-              variant={"ghost"}
-              onClick={() => {
-                navigate("bookRoom");
-              }}
-            >
-              {getIcon(element.icon)}
-              {"Book Room"}
-            </Button>
-            <Button
-              size={"lg"}
-              key={"View Availability"}
-              variant={"ghost"}
-              onClick={() => {
-                navigate("availability");
-              }}
-            >
-              {<LuDoorOpen />}
-              {"View Availability"}
-            </Button>
+            {collapsibleElements.map((collapseEle) => (
+              <Link
+                to={`/admin${collapseEle.navigateTo}`}
+                key={collapseEle.value}
+              >
+                <Button size={"lg"} key={collapseEle.value} variant={"ghost"}>
+                  {getIcon(collapseEle.icon)}
+                  {collapseEle.value}
+                </Button>
+              </Link>
+            ))}
           </Collapsible.Content>
         </Collapsible.Root>
       );

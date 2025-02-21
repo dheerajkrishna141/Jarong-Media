@@ -12,10 +12,12 @@ export const bookingSchema = z
     remarks: z.string(),
     purposeOfVisit: z.string(),
     // Room Details
+    hotel: z.array(z.string().min(1, { message: "Hotel is required" })),
+
     roomType: z.array(
       z.string().min(1, { message: "Booking type is required" })
     ),
-    roomNo: z.string().min(1, "Room number is required"),
+    roomId: z.array(z.string().min(1, { message: "Room is required" })),
     adults: z.string(),
     children: z.string(),
 

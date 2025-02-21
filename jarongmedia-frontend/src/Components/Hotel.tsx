@@ -86,7 +86,7 @@ const Hotel = () => {
                 transition: "transform 0.2s ease-in-out",
               }}
               onClick={() => {
-                navigate("/admin/hotel/" + metric.navigateTo); //fix this endpoint issue later.
+                navigate("/admin/hotel/" + metric.navigateTo);
               }}
             >
               <Card.Body>

@@ -1,3 +1,5 @@
+import useHotels from "@/hooks/useHotels";
+import useRooms from "@/hooks/useRooms";
 import HotelService from "@/services/HotelService";
 import {
   Box,
@@ -15,7 +17,7 @@ import {
   SelectValueText,
 } from "@chakra-ui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 import { hotelDTOWithId, roomDTO } from "./AddRoom";
@@ -58,31 +60,35 @@ const AddAvailability = () => {
     register,
     formState: { errors },
     handleSubmit,
+    watch,
   } = useForm<FormValues>({
     resolver: zodResolver(formSchema),
   });
 
-  const [hotelInfo, setHotelInfo] = useState<hotelDTOWithId[]>([]);
-  const [roomInfo, setRoomInfo] = useState<roomDTO[]>([]);
+  // const [hotelInfo, setHotelInfo] = useState<hotelDTOWithId[]>([]);
+  // const [roomInfo, setRoomInfo] = useState<roomDTO[]>([]);
 
-  useEffect(() => {
-    HotelService.getRooms().then((data) => {
-      setRoomInfo(data);
-    });
+  const { data: roomData } = useRooms();
+  const { data: hotelData } = useHotels();
 
-    HotelService.getHotels().then((data) => {
-      setHotelInfo(data);
-    });
-  }, []);
+  const allRooms: roomDTO[] = roomData || [];
+  const allHotels: hotelDTOWithId[] = hotelData || [];
+
+  const selectedHotel = watch("hotel");
+
+  const shortListedRooms = useMemo(() => {
+    if (!selectedHotel) return [] as roomDTO[];
+    return allRooms?.filter((room) => room.hotelId === selectedHotel[0]);
+  }, [selectedHotel]);
 
   const hotels = createListCollection({
-    items: hotelInfo.map((hotel) => ({
+    items: allHotels.map((hotel) => ({
       label: hotel.name,
       value: hotel.id,
     })),
   });
   const rooms = createListCollection({
-    items: roomInfo.map((room) => ({
+    items: shortListedRooms.map((room) => ({
       label: room.id,
       value: room.id,
     })),
@@ -149,34 +155,6 @@ const AddAvailability = () => {
               }}
               gap={6}
             >
-              <Field.Root invalid={!!errors.roomId}>
-                <Field.Label>Room Id</Field.Label>
-                <Controller
-                  control={control}
-                  name="roomId"
-                  render={({ field }) => (
-                    <SelectRoot
-                      name={field.name}
-                      value={field.value}
-                      onValueChange={({ value }) => field.onChange(value)}
-                      onInteractOutside={() => field.onBlur()}
-                      collection={rooms}
-                    >
-                      <SelectTrigger>
-                        <SelectValueText placeholder="Select Hotel" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {rooms.items.map((room) => (
-                          <SelectItem item={room} key={room.value}>
-                            {room.label}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </SelectRoot>
-                  )}
-                />
-                <Field.ErrorText>{errors.roomId?.message}</Field.ErrorText>
-              </Field.Root>
               <Field.Root invalid={!!errors.hotel}>
                 <Field.Label>Hotel</Field.Label>
                 <Controller
@@ -204,6 +182,37 @@ const AddAvailability = () => {
                   )}
                 />
                 <Field.ErrorText>{errors.hotel?.message}</Field.ErrorText>
+              </Field.Root>
+              <Field.Root
+                invalid={!!errors.roomId}
+                disabled={shortListedRooms.length === 0}
+              >
+                <Field.Label>Room Id</Field.Label>
+                <Controller
+                  control={control}
+                  name="roomId"
+                  render={({ field }) => (
+                    <SelectRoot
+                      name={field.name}
+                      value={field.value}
+                      onValueChange={({ value }) => field.onChange(value)}
+                      onInteractOutside={() => field.onBlur()}
+                      collection={rooms}
+                    >
+                      <SelectTrigger>
+                        <SelectValueText placeholder="Select Room" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {rooms.items.map((room) => (
+                          <SelectItem item={room} key={room.value}>
+                            {room.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </SelectRoot>
+                  )}
+                />
+                <Field.ErrorText>{errors.roomId?.message}</Field.ErrorText>
               </Field.Root>
               <Field.Root invalid={errors.checkInDate ? true : false}>
                 <Field.Label>Check In Date</Field.Label>
