@@ -1,7 +1,9 @@
 package com.jarongmedia_backend.serviceImpl;
 
 import java.math.BigDecimal;
+import java.security.SecureRandom;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,7 @@ import com.stripe.param.checkout.SessionCreateParams.LineItem.PriceData;
 import com.stripe.param.checkout.SessionCreateParams.LineItem.PriceData.ProductData;
 import com.stripe.param.checkout.SessionCreateParams.Mode;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -32,6 +35,8 @@ public class StripePaymentServiceImpl implements StripePaymentService {
 
 	@Value("${stripe.payment.cancel.url}")
 	private String cancelUrl;
+	
+
 
 	@Override
 	public StripeResponse makePayment(HotelBookingDTO bookingDTO) {
@@ -46,9 +51,10 @@ public class StripePaymentServiceImpl implements StripePaymentService {
 		LineItem lineItem = LineItem.builder().setPriceData(priceData).setQuantity(1L).build();
 
 		SessionCreateParams createParams = SessionCreateParams.builder().addLineItem(lineItem).setMode(Mode.PAYMENT)
-				.setSuccessUrl(successUrl).setCancelUrl(cancelUrl).build();
-		log.debug(priceData.getProductData().getName());
-		log.debug(lineItem.getPriceData().toString());
+				.setSuccessUrl(successUrl+"?session_id={CHECKOUT_SESSION_ID}").setCancelUrl(cancelUrl)
+				.putMetadata("confirmation_code", bookingDTO.getConfirmationCode())
+				.build();
+
 
 		try {
 			Session session = Session.create(createParams);
@@ -60,5 +66,22 @@ public class StripePaymentServiceImpl implements StripePaymentService {
 		}
 
 	}
+	
+	
+	public String getBookingConfirmationCode(String sessionId) {
+		
+		Stripe.apiKey= stripeKey;
+		try {
+			Session session = Session.retrieve(sessionId);
+			return session.getMetadata().get("confirmation_code");
+			
+		}
+		catch(StripeException e) {
+			throw new EntityNotFoundException(e.getMessage());
+		}
+	}
+	
+	
+
 
 }

@@ -2,8 +2,10 @@ package com.jarongmedia_backend.serviceImpl;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 
+import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -75,7 +77,7 @@ public class HotelServiceImpl implements HotelService {
 			}
 			room = roomRepository.save(room);
 
-			Hotel hotel = hotelRepository.findById(room.getHotelId()).orElseThrow(
+			Hotel hotel = hotelRepository.findById(roomDTO.getHotelId()).orElseThrow(
 					() -> new EntityNotFoundException("Hotel with id: " + roomDTO.getHotelId() + " not found"));
 			hotel.getRooms().add(room);
 			hotelRepository.save(hotel);
@@ -104,6 +106,37 @@ public class HotelServiceImpl implements HotelService {
 			throw new EntityNotUniqueException("Feature with name: " + featureDTO.getId() + " is not unique!");
 		}
 
+	}
+
+	@Override
+	public List<Features> getFeatures() {
+		List<Features> features = featureRepository.findAll();
+		if (features.isEmpty())
+			throw new EntityNotFoundException("No features are present, add features!");
+		return features;
+
+	}
+
+	@Override
+	public List<Hotel> getHotels() {
+		List<Hotel> hotels = hotelRepository.findAll();
+		if (hotels.isEmpty())
+			throw new EntityNotFoundException("No hotels are present, add hotels!");
+		return hotels;
+	}
+
+	@Override
+	public List<Room> getRooms() {
+		List<Room> rooms = roomRepository.findAll();
+		if (rooms.isEmpty())
+			throw new EntityNotFoundException("No rooms are present, add rooms!");
+		return rooms;
+	}
+
+	@Override
+	public Hotel getHotelById(String id) {
+		ObjectId objectId = new ObjectId(id);
+		return hotelRepository.findById(objectId).orElseThrow(()-> new EntityNotFoundException("Hotel Not Found!"));
 	}
 
 }

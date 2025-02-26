@@ -19,12 +19,12 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useController, useForm } from "react-hook-form";
 import { z } from "zod";
-import { Checkbox } from "./UI/checkbox";
+import { Checkbox } from "../../UI/checkbox";
 import { useEffect, useState } from "react";
 import { featureDTO } from "./AddFeature";
 import HotelService from "@/services/HotelService";
 import { hotelDTO } from "./AddHotel";
-import { toaster } from "./UI/toaster";
+import { toaster } from "../../UI/toaster";
 import { availabilityDTO } from "./AddAvailability";
 
 const formSchema = z.object({
@@ -55,6 +55,19 @@ export interface roomDTO {
   features: string[];
   hotelId: string;
   pricePerNight: number;
+  availability: availabilityDTO[];
+}
+
+export interface room {
+  id: string;
+  category: string;
+  features: featureDTO[];
+  hotelId: string;
+  pricePerNight: number;
+  gallery: {
+    [key: string]: string;
+  };
+  capacity: string;
   availability: availabilityDTO[];
 }
 

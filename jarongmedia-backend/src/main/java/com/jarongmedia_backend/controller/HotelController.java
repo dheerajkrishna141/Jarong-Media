@@ -3,6 +3,8 @@ package com.jarongmedia_backend.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,6 +36,33 @@ public class HotelController {
 	@PostMapping("/feature")
 	public ResponseEntity<?> createFeature(@RequestBody FeatureDTO dto) {
 		return new ResponseEntity<>(hotelService.createFeature(dto), HttpStatus.CREATED);
+
+	}
+
+	@GetMapping("/feature/all")
+	public ResponseEntity<?> getFeatures() {
+
+		return new ResponseEntity<>(hotelService.getFeatures(), HttpStatus.OK);
+
+	}
+	
+	@GetMapping("/hotel/{id}")
+	public ResponseEntity<?> getHotelById(@PathVariable String id){
+		
+		return new ResponseEntity<>(hotelService.getHotelById(id), HttpStatus.OK);
+	}
+
+	@GetMapping("/all")
+	public ResponseEntity<?> getHotels() {
+
+		return new ResponseEntity<>(hotelService.getHotels(), HttpStatus.OK);
+
+	}
+	
+	@GetMapping("/room/all")
+	public ResponseEntity<?> getRooms() {
+
+		return new ResponseEntity<>(hotelService.getRooms(), HttpStatus.OK);
 
 	}
 

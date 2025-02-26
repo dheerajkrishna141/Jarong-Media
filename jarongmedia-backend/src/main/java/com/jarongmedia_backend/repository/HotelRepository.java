@@ -9,4 +9,6 @@ public interface HotelRepository extends MongoRepository<Hotel, ObjectId> {
 
 	Hotel findByName(String name);
 
+	String findNameById(String hotelId);
+
 }

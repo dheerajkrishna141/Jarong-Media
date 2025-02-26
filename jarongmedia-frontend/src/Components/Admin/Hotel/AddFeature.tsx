@@ -21,7 +21,7 @@ import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { IoMdAddCircleOutline } from "react-icons/io";
 import { MdDeleteForever } from "react-icons/md";
 import { z } from "zod";
-import { toaster } from "./UI/toaster";
+import { toaster } from "../../UI/toaster";
 
 const categorySchema = z.object({
   name: z.string().min(1, { message: "Category name is required" }),

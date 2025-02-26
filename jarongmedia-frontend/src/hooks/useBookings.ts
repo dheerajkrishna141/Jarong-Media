@@ -1,13 +1,18 @@
 import HotelBookingService from "@/services/HotelBookingService";
 import { useQuery } from "@tanstack/react-query";
 
-const useBookings = (pageNo: number) => {
+interface queryObject {
+  pageNo: number;
+  searchInput: string;
+}
+const useBookings = (QueryObject: queryObject) => {
   return useQuery({
-    queryKey: ["bookings", pageNo],
+    queryKey: ["bookings", QueryObject],
     queryFn: () => {
       return HotelBookingService.getBookings({
         params: {
-          pageNo: pageNo,
+          pageNo: QueryObject.pageNo,
+          search_cc: QueryObject.searchInput,
         },
       });
     },

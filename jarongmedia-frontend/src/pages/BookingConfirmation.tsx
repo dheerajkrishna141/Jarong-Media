@@ -3,7 +3,6 @@
 import { useColorModeValue } from "@/Components/UI/color-mode";
 import { toaster } from "@/Components/UI/toaster";
 import useBookingConfirmation from "@/hooks/useBookingConfirmation";
-import checkIcon from "../assets/checkIcon.svg";
 import {
   Box,
   Button,
@@ -17,7 +16,7 @@ import {
 } from "@chakra-ui/react";
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { HotelBookingDTOWithCC } from "@/services/httpHotelBookingService";
+import checkIcon from "../assets/checkIcon.svg";
 
 const BookingConfirmation = () => {
   const [searchParams] = useSearchParams();
@@ -54,13 +53,7 @@ const BookingConfirmation = () => {
         </Text>
 
         <VStack gap={6}>
-          <Heading
-            size="2xl"
-            textAlign="center"
-            // bgGradient={`linear(to-r, ${successColor}, teal.400)`}
-            // bgClip="text"
-            // letterSpacing="tight"
-          >
+          <Heading size="2xl" textAlign="center">
             Your Booking Is Confirmed
           </Heading>
 
@@ -107,7 +100,9 @@ const BookingConfirmation = () => {
           <Button
             size="lg"
             colorScheme="green"
-            onClick={() => {}}
+            onClick={() => {
+              navigate("/admin/viewBookings");
+            }}
             _hover={{
               transform: "translateY(-2px)",
               boxShadow: "lg",

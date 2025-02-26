@@ -20,8 +20,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
-import { hotelDTOWithId, roomDTO } from "./AddRoom";
-import { toaster } from "./UI/toaster";
+import { hotelDTOWithId, room, roomDTO } from "./AddRoom";
+import { toaster } from "../../UI/toaster";
 
 const formSchema = z
   .object({
@@ -71,7 +71,7 @@ const AddAvailability = () => {
   const { data: roomData } = useRooms();
   const { data: hotelData } = useHotels();
 
-  const allRooms: roomDTO[] = roomData || [];
+  const allRooms: room[] = roomData || [];
   const allHotels: hotelDTOWithId[] = hotelData || [];
 
   const selectedHotel = watch("hotel");

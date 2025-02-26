@@ -1,4 +1,4 @@
-import { availabilityDTO } from "@/Components/AddAvailability";
+import { availabilityDTO } from "@/Components/Admin/Hotel/AddAvailability";
 import { httpHotelService } from "@/services/httpHotelService";
 import { useQuery } from "@tanstack/react-query";
 

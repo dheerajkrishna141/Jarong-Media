@@ -17,7 +17,7 @@ import {
   PaginationNextTrigger,
   PaginationPrevTrigger,
   PaginationRoot,
-} from "./UI/pagination";
+} from "../../UI/pagination";
 
 const ViewTodaysBookings = () => {
   const getCurrentDateFormatted = (): string => {

@@ -9,4 +9,7 @@ export const CONSTANTS = {
 
   ADMIN_ROLE: "ROLE_ADMIN",
   USER_ROLE: "ROLE_USER",
+  OAUTH2_CLIENT_ID:
+    "825177018240-8kpg5ghcvusr1ifhp5p17pro2l0cpu4g.apps.googleusercontent.com",
+  OAUTH2_REDIRECT_URI: "http://localhost:5173/google/login",
 };

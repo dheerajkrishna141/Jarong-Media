@@ -27,9 +27,12 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMemo } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { bookingSchema, type BookingFormData } from "../schema/BookingSchema";
-import { hotelDTOWithId, roomDTO } from "./AddRoom";
-import { Radio } from "./UI/radio";
+import {
+  bookingSchema,
+  type BookingFormData,
+} from "../../../schema/BookingSchema";
+import { Radio } from "../../UI/radio";
+import { hotelDTOWithId, room, roomDTO } from "../Hotel/AddRoom";
 
 const roomType = createListCollection({
   items: [
@@ -73,7 +76,7 @@ const BookRoom = () => {
   const { data: hotelData } = useHotels();
   const { mutate: createBooking } = useAddHotelBooking();
 
-  const allRooms: roomDTO[] = roomData || [];
+  const allRooms: room[] = roomData || [];
   const allHotels: hotelDTOWithId[] = hotelData || [];
 
   const selectedHotel = watch("hotel");

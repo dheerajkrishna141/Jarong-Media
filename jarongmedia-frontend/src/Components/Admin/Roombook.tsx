@@ -8,6 +8,7 @@ import {
   Flex,
   SelectContent,
   SelectItem,
+  SelectLabel,
   SelectRoot,
   SelectTrigger,
   SelectValueText,
@@ -17,12 +18,12 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useEffect, useMemo, useState } from "react";
-import { hotelDTOWithId } from "./AddRoom";
-import { SelectLabel } from "./UI/select";
-import { toaster } from "./UI/toaster";
+import { hotelDTOWithId } from "./Hotel/AddRoom";
+import { toaster } from "../UI/toaster";
+import useRooms from "@/hooks/useRooms";
 
 const Availability = () => {
-  const { data: availabilityData, isError, isLoading } = useAvailability();
+  const { data: roomData, isError, isLoading } = useRooms();
   const { data: hotelData, isError: isHotelError } = useHotels();
 
   const allHotels: hotelDTOWithId[] = hotelData || [];
@@ -37,17 +38,20 @@ const Availability = () => {
     }
   }, []);
 
-  const allAvailability = useMemo(() => {
-    return availabilityData?.filter(
-      (availability) => availability.hotelId === value[0]
-    );
+  const allRooms = useMemo(() => {
+    if (value[0] === "all") return roomData;
+
+    return roomData?.filter((room) => room.hotelId === value[0]);
   }, [value]);
 
   const hotels = createListCollection({
-    items: allHotels.map((hotel) => ({
-      label: hotel.name,
-      value: hotel.id,
-    })),
+    items: [
+      { label: "All Hotels", value: "all" },
+      ...allHotels.map((hotel) => ({
+        label: hotel.name,
+        value: hotel.id,
+      })),
+    ],
   });
 
   return (
@@ -55,7 +59,7 @@ const Availability = () => {
       <Card.Root shadow={"lg"}>
         <Card.Header>
           <Text fontSize="2xl" fontWeight="bold" mb={6}>
-            Availability Status
+            Room List
           </Text>
         </Card.Header>
         <Card.Body>
@@ -93,32 +97,22 @@ const Availability = () => {
               <Table.Header>
                 <Table.Row>
                   <Table.ColumnHeader>ROOM ID</Table.ColumnHeader>
-                  <Table.ColumnHeader>CHECK IN</Table.ColumnHeader>
-                  <Table.ColumnHeader>CHECK OUT</Table.ColumnHeader>
-                  <Table.ColumnHeader>STATUS</Table.ColumnHeader>
+                  <Table.ColumnHeader>CATEGORY</Table.ColumnHeader>
+                  <Table.ColumnHeader>PRICE PER NIGHT</Table.ColumnHeader>
+                  <Table.ColumnHeader>AREA</Table.ColumnHeader>
+                  <Table.ColumnHeader>BED TYPE</Table.ColumnHeader>
                 </Table.Row>
               </Table.Header>
               <Table.Body>
-                {(value[0] ? allAvailability : availabilityData)?.map(
-                  (availability) => (
-                    <Table.Row key={availability.id}>
-                      <Table.Cell>{availability.roomId}</Table.Cell>
-                      <Table.Cell>{availability.checkInDate}</Table.Cell>
-                      <Table.Cell>{availability.checkOutDate}</Table.Cell>
-                      <Table.Cell>
-                        {availability.status == "available" ? (
-                          <Badge size={"lg"} colorPalette="green">
-                            Available
-                          </Badge>
-                        ) : (
-                          <Badge size={"lg"} colorPalette={"yellow"}>
-                            Booked
-                          </Badge>
-                        )}
-                      </Table.Cell>
-                    </Table.Row>
-                  )
-                )}
+                {(value[0] ? allRooms : roomData)?.map((room) => (
+                  <Table.Row key={room.id}>
+                    <Table.Cell>{room.id}</Table.Cell>
+                    <Table.Cell>{room.category}</Table.Cell>
+                    <Table.Cell>${room.pricePerNight}</Table.Cell>
+                    <Table.Cell>{room.features[0].area}</Table.Cell>
+                    <Table.Cell>{room.features[0].bed_type}</Table.Cell>
+                  </Table.Row>
+                ))}
               </Table.Body>
             </Table.Root>
           )}

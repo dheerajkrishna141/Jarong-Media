@@ -1,7 +1,6 @@
 package com.jarongmedia_backend.dto;
 
 import java.time.LocalDate;
-import java.util.HashMap;
 
 import org.bson.types.ObjectId;
 
@@ -14,26 +13,10 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public class HotelBookingDTO {
-
-	
-	private ObjectId hotelId;
-	
+public class AvailabilityUIDTO {
 	private String roomId;
-	
+	private String hotelId;
 	private LocalDate checkInDate;
-	
 	private LocalDate checkOutDate;
-	
-	private HashMap<String, String> customerDetails;
-	
-	private HashMap<String, String> roomDetails;
-	
-	private HashMap<String, String> additionalDetails;
-	
-	private String confirmationCode;
-	
 	private String status;
-		
-	private double totalAmount;
 }

@@ -34,4 +34,12 @@ public class Availability {
 
 	private String status;
 
+	public String getId() {
+		return this.id.toHexString();
+	}
+
+	public String getHotelId() {
+		return this.hotelId.toHexString();
+	}
+
 }

@@ -14,13 +14,9 @@ import { useEffect } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 
 const Admin = () => {
-  const { getItem: getUserStatus } = useLocalStorage(CONSTANTS.USER_STATUS_KEY);
   useEffect(() => {});
   const isLargeScreen = useBreakpointValue({ base: false, lg: true });
 
-  if (!getUserStatus()) {
-    return <Navigate to={"/login"}></Navigate>;
-  }
   return (
     <Box>
       <NavBar></NavBar>

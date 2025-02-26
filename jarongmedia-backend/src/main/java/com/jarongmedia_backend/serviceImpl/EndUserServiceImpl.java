@@ -136,16 +136,16 @@ public class EndUserServiceImpl implements EndUserService {
 				endUserRepo.save(user);
 				otpRepository.deleteByEndUser(user);
 				message.setStatus(true);
-				message.setMessage("user successfully verified!");
+				message.setMessage("User Successfully Verified!");
 			} else {
 				message.setStatus(false);
-				message.setMessage("user already verified.");
+				message.setMessage("User Already Verified.");
 			}
 			return message;
 		}
 
 		message.setStatus(false);
-		message.setMessage("OTP not valid");
+		message.setMessage("OTP Not Valid");
 		return message;
 	}
 

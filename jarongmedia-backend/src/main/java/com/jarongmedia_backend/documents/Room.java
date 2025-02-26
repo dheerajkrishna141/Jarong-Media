@@ -41,5 +41,9 @@ public class Room {
 	private HashMap<String, String> gallery;
 
 	private String capacity;
+	
+	public String getHotelId() {
+		return this.hotelId.toHexString();
+	}
 
 }

@@ -9,7 +9,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { IoChevronUpCircleOutline } from "react-icons/io5";
-import ViewTodaysBookings from "./ViewTodaysBookings";
+import ViewTodaysBookings from "./Dashboard/ViewTodaysBookings";
 
 const metrics = [
   {

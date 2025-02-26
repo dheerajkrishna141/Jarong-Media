@@ -4,6 +4,7 @@ import java.util.Set;
 
 import com.jarongmedia_backend.documents.Availability;
 import com.jarongmedia_backend.dto.AvailabilityDTO;
+import com.jarongmedia_backend.dto.AvailabilityUIDTO;
 
 public interface AvailabilityService {
 

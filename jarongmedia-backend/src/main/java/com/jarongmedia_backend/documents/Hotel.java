@@ -29,7 +29,9 @@ public class Hotel {
 	private String name;
 
 	private HashMap<String, String> address;
-
+	
+	private String description;
+	
 	@DBRef
 	private Rating rating;
 
@@ -43,4 +45,7 @@ public class Hotel {
 
 	private HashMap<String, String> gallery;
 
+	public String getId() {
+		return this.id.toHexString();
+	}
 }

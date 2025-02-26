@@ -6,7 +6,6 @@ import {
   AvatarRoot,
   Button,
   HStack,
-  Link,
   MenuContent,
   MenuItem,
   MenuRoot,
@@ -16,7 +15,7 @@ import {
 } from "@chakra-ui/react";
 import { BsIncognito } from "react-icons/bs";
 import { IoChevronDownCircleOutline } from "react-icons/io5";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const ProfilePop = () => {
   const { getItem: getUser, clear: clearUser } = useLocalStorage(
@@ -65,7 +64,9 @@ const ProfilePop = () => {
 
             <VStack align="stretch" gap={2}>
               <MenuItem value="My Profile">My Profile</MenuItem>
-              <MenuItem value="Common Settings">Common Settings</MenuItem>
+              <MenuItem value="Common Settings">
+                <Link to={"/admin/commonSettings"}>Common Settings</Link>
+              </MenuItem>
               <MenuItem value="Settings">Settings</MenuItem>
             </VStack>
             <Button
@@ -78,11 +79,11 @@ const ProfilePop = () => {
               Logout
             </Button>
             <HStack justify="center" fontSize="sm" color="gray.500" gap={2}>
-              <Link>Privacy policy</Link>
+              <Link to={"/"}>Privacy policy</Link>
               <Text>•</Text>
-              <Link>Terms</Link>
+              <Link to={"/"}>Terms</Link>
               <Text>•</Text>
-              <Link>Cookies</Link>
+              <Link to={"/"}>Cookies</Link>
             </HStack>
           </VStack>
         </MenuContent>
@@ -92,30 +93,3 @@ const ProfilePop = () => {
 };
 
 export default ProfilePop;
-
-// <MenuRoot>
-//   <MenuTrigger asChild>
-//     <Box className="cursor-pointer">
-//       <Image
-//         src="https://bit.ly/naruto-sage"
-//         boxSize="50px"
-//         borderRadius="full"
-//         fit="cover"
-//         alt="Naruto Uzumaki"
-//       />
-//     </Box>
-//   </MenuTrigger>
-//   <MenuContent
-//     minW={"250px"}
-//     padding={5}
-//     fontSize={12}
-//     zIndex={1000}
-//     position={"absolute"}
-//   >
-//     <MenuItem value="rename">Rename</MenuItem>
-//     <MenuItem value="export">Export</MenuItem>
-//     <MenuItem value="delete" color="fg.error">
-//       Delete...
-//     </MenuItem>
-//   </MenuContent>
-// </MenuRoot>

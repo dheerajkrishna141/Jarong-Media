@@ -14,6 +14,7 @@ import lombok.Setter;
 public class HotelDTO {
 
 	private String name;
+	private String description;
 	private HashMap<String, String> address;
 	private HashMap<String, String> amenities;
 	private HashMap<String, String> gallery;

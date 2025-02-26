@@ -1,5 +1,5 @@
 import { AxiosRequestConfig } from "axios";
-import apiClient from "./api-client";
+import axiosInstance from "./api-client";
 
 export interface user {
   firstName: string;
@@ -22,12 +22,12 @@ interface fetchedUser {
   }[];
 }
 
-interface fetchedResponse {
+export interface fetchedResponse {
   endUser: fetchedUser;
   status: boolean;
   message: string;
 }
-class UserService {
+class httpUserService {
   endpoint: string;
 
   constructor(endpoint: string) {
@@ -35,28 +35,44 @@ class UserService {
   }
 
   login(config: AxiosRequestConfig) {
-    return apiClient
+    return axiosInstance
       .get<fetchedResponse>(this.endpoint + "/login", config)
       .then((res) => res.data);
   }
 
+  me() {
+    return axiosInstance
+      .get<fetchedResponse>(this.endpoint + "/me")
+      .then((res) => res.data);
+  }
+
+  googleLogin(config: AxiosRequestConfig) {
+    return axiosInstance
+      .get<fetchedResponse>(this.endpoint + "/callback", config)
+      .then((res) => {
+        console.log(res.data);
+
+        return res.data;
+      });
+  }
+
   register(config: AxiosRequestConfig) {
-    return apiClient
+    return axiosInstance
       .post(this.endpoint + "/register", config.data)
       .then((data) => data.data);
   }
 
   verify(config: AxiosRequestConfig) {
-    return apiClient
+    return axiosInstance
       .post(this.endpoint + "/verify", null, config)
       .then((data) => data.data);
   }
 
   logout() {
-    return apiClient.post("/logout").then((res) => res.data);
+    return axiosInstance.post("/logout").then((res) => res.data);
   }
 }
 
-const userDTOFunction = (endpoint: string) => new UserService(endpoint);
+const userDTOFunction = (endpoint: string) => new httpUserService(endpoint);
 
-export default userDTOFunction;
+export { userDTOFunction, httpUserService };

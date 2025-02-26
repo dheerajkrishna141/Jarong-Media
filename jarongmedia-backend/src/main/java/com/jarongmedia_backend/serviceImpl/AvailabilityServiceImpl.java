@@ -22,6 +22,7 @@ import com.jarongmedia_backend.service.AvailabilityService;
 
 @Service
 public class AvailabilityServiceImpl implements AvailabilityService {
+	@Autowired
 	HotelRepository hotelRepository;
 
 	@Autowired
@@ -50,7 +51,8 @@ public class AvailabilityServiceImpl implements AvailabilityService {
 		Set<Availability> updatedAvailabilities = new HashSet<>();
 
 		for (Availability currentAvailability : existingAvailabilities) {
-			if (!currentAvailability.getStatus().equals("available")) {
+			if (!(currentAvailability.getStatus().equals("available")
+					|| currentAvailability.getStatus().equals("payment_pending"))) {
 				continue; // Skip non-available records
 			}
 
@@ -155,12 +157,14 @@ public class AvailabilityServiceImpl implements AvailabilityService {
 		}
 
 		// Check for conflicts
-		for (Availability currentAvailability : existingAvailabilities) {
-			LocalDate currentCheckIn = currentAvailability.getCheckInDate();
-			LocalDate currentCheckOut = currentAvailability.getCheckOutDate();
+		if (!existingAvailabilities.contains(null)) {
+			for (Availability currentAvailability : existingAvailabilities) {
+				LocalDate currentCheckIn = currentAvailability.getCheckInDate();
+				LocalDate currentCheckOut = currentAvailability.getCheckOutDate();
 
-			if (!(newCheckOut.isBefore(currentCheckIn) || newCheckIn.isAfter(currentCheckOut))) {
-				throw new OperationNotAllowed("Conflicting availability exists for this date range.");
+				if (!(newCheckOut.isBefore(currentCheckIn) || newCheckIn.isAfter(currentCheckOut))) {
+					throw new OperationNotAllowed("Conflicting availability exists for this date range.");
+				}
 			}
 		}
 
@@ -193,6 +197,11 @@ public class AvailabilityServiceImpl implements AvailabilityService {
 						availabilityDTO.getCheckOutDate());
 		availableRooms = availableRooms.stream().filter((availability -> !"booked".equals(availability.getStatus())))
 				.collect(Collectors.toSet());
+//		   Set<AvailabilityUIDTO> modifiedAvailability = availableRooms.stream().map((availability) -> {
+//		        String hotelName = hotelRepository.findNameById(availability.getHotelId());
+//		        return new AvailabilityUIDTO(availability.getRoomId(), hotelName,
+//		                availability.getCheckInDate(), availability.getCheckOutDate(), availability.getStatus());
+//		    }).collect(Collectors.toSet());
 
 		return availableRooms;
 
@@ -204,6 +213,11 @@ public class AvailabilityServiceImpl implements AvailabilityService {
 		Set<Availability> availableRooms = availabilityRepository.findByStatus("available");
 		availableRooms = availableRooms.stream().filter((availability -> !"booked".equals(availability.getStatus())))
 				.collect(Collectors.toSet());
+//		  Set<AvailabilityUIDTO> modifiedAvailability = availableRooms.stream().map((availability) -> {
+//		        String hotelName = this.hotelRepository.findNameById(availability.getHotelId());
+//		        return new AvailabilityUIDTO(availability.getRoomId(), hotelName,
+//		                availability.getCheckInDate(), availability.getCheckOutDate(), availability.getStatus());
+//		    }).collect(Collectors.toSet());
 
 		return availableRooms;
 

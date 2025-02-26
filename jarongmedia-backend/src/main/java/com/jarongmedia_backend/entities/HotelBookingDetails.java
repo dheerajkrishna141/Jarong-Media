@@ -1,6 +1,7 @@
 package com.jarongmedia_backend.entities;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 
 import org.bson.types.ObjectId;
 
@@ -35,16 +36,27 @@ public class HotelBookingDetails {
 	private EndUser endUser;
 
 	private ObjectId hotelId;
-	
+
 	private String roomId;
 
 	private LocalDate checkInDate;
 
 	private LocalDate checkOutDate;
+
+	private HashMap<String, String> customerDetails;
 	
+	private HashMap<String, String> roomDetails;
+	
+	private HashMap<String, String> additionalDetails;
+
 	private String confirmationCode;
+	
+	private String status;
 
 	private double totalAmount;
 	
+	public String getHotelId() {
+		return this.hotelId.toHexString();
+	}
 
 }

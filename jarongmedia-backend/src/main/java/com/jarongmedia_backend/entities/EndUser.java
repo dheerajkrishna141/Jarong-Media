@@ -23,6 +23,7 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -32,6 +33,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
+@Builder
 public class EndUser {
 
 	@Id
@@ -57,6 +59,7 @@ public class EndUser {
 
 	@JsonIgnore
 	@Column(name = "email_verified")
+	@Builder.Default
 	private boolean emailVerified = false;
 
 	@JsonIgnore
@@ -66,6 +69,7 @@ public class EndUser {
 
 	@ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+	@Builder.Default
 	private Set<Roles> roles = new HashSet<Roles>();
 
 	@JsonIgnore

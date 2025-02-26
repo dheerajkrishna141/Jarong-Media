@@ -1,24 +1,27 @@
 import { createBrowserRouter } from "react-router-dom";
-import App from "./App";
-import AddAvailability from "./Components/AddAvailability";
-import AddFeature from "./Components/AddFeature";
-import AddHotel from "./Components/AddHotel";
-import AddRoom from "./Components/AddRoom";
-import Availability from "./Components/Availability";
-import BookRoom from "./Components/BookRoom";
-import { Dashboard } from "./Components/Dashboard";
-import Feature from "./Components/Feature";
-import Hotel from "./Components/Hotel";
-import Promocode from "./Components/Promocode";
-import Roombook from "./Components/Roombook";
-import Admin from "./pages/Admin";
-import Home from "./pages/Home";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
-import EmailVerify from "./pages/EmailVerify";
-import PaymentPage from "./pages/PaymentPage";
-import BookingConfirmation from "./pages/BookingConfirmation";
-import AllBookings from "./Components/AllBookings";
+import App from "../App";
+import AddAvailability from "../Components/Admin/Hotel/AddAvailability";
+import AddFeature from "../Components/Admin/Hotel/AddFeature";
+import AddHotel from "../Components/Admin/Hotel/AddHotel";
+import AddRoom from "../Components/Admin/Hotel/AddRoom";
+import Availability from "../Components/Admin/Room/Availability";
+import BookRoom from "../Components/Admin/Room/BookRoom";
+import { Dashboard } from "../Components/Admin/Dashboard";
+import Feature from "../Components/Admin/Feature";
+import Hotel from "../Components/Admin/Hotel/Hotel";
+import Promocode from "../Components/Admin/Promocode";
+import Roombook from "../Components/Admin/Roombook";
+import Admin from "../pages/Admin";
+import Home from "../pages/Home";
+import Login from "../pages/Login";
+import Register from "../pages/Register";
+import EmailVerify from "../pages/EmailVerify";
+import PaymentPage from "../pages/PaymentPage";
+import BookingConfirmation from "../pages/BookingConfirmation";
+import AllBookings from "../Components/Admin/AllBookings";
+import GoogleLoginConfirmation from "../pages/GoogleLoginConfirmation";
+import PrivateRoutes from "./PrivateRoutes";
+import SignInMethod from "@/Components/Admin/Profile/SignInMethod";
 
 const routes = createBrowserRouter([
   {
@@ -34,6 +37,10 @@ const routes = createBrowserRouter([
         element: <Login></Login>,
       },
       {
+        path: "/google/login",
+        element: <GoogleLoginConfirmation />,
+      },
+      {
         path: "/register",
         element: <Register></Register>,
       },
@@ -41,6 +48,11 @@ const routes = createBrowserRouter([
         path: "/user/verify",
         element: <EmailVerify></EmailVerify>,
       },
+    ],
+  },
+  {
+    element: <PrivateRoutes />,
+    children: [
       {
         path: "/admin",
         element: <Admin></Admin>,
@@ -48,6 +60,10 @@ const routes = createBrowserRouter([
           {
             index: true,
             element: <Dashboard></Dashboard>,
+          },
+          {
+            path: "commonSettings",
+            element: <SignInMethod></SignInMethod>,
           },
           {
             path: "dashboard",

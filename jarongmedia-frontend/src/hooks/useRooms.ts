@@ -1,11 +1,11 @@
-import { roomDTO } from "@/Components/AddRoom";
+import { room } from "@/Components/Admin/Hotel/AddRoom";
 import { httpHotelService } from "@/services/httpHotelService";
 import { useQuery } from "@tanstack/react-query";
 
 const useRooms = () => {
   const roomClient = new httpHotelService("/admin/hotel");
 
-  return useQuery<roomDTO[], any>({
+  return useQuery<room[], any>({
     queryKey: ["room", "all"],
     queryFn: () => {
       return roomClient.getRooms();

@@ -1,4 +1,4 @@
-import userDTOFunction from "./httpUserService";
+import { userDTOFunction } from "./httpUserService";
 
 const UserService = userDTOFunction("/user");
 

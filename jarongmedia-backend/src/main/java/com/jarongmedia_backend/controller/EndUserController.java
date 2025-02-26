@@ -54,6 +54,12 @@ public class EndUserController {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
+	
+	
+	@GetMapping("/me")
+	public ResponseEntity<?> getUser(Authentication auth){
+		return new ResponseEntity<loginMessage>(endUserService.loginUser(auth.getName()), HttpStatus.OK);
+	}
 
 	@PostMapping("/verify")
 	public ResponseEntity<?> verfiyUser(@RequestParam(required = true, name = "verification_otp") long otp) {

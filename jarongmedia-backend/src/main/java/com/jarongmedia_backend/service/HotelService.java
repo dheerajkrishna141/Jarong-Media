@@ -1,5 +1,7 @@
 package com.jarongmedia_backend.service;
 
+import java.util.List;
+
 import com.jarongmedia_backend.documents.Features;
 import com.jarongmedia_backend.documents.Hotel;
 import com.jarongmedia_backend.documents.Room;
@@ -16,5 +18,13 @@ public interface HotelService {
 	public Features createFeature(FeatureDTO featureDTO);
 	
 	public Room getRoom(String roomId);
+	
+	public List<Features> getFeatures();
+	
+	public List<Hotel> getHotels();
+
+	public List<Room> getRooms();
+
+	public Hotel getHotelById(String id);
 	
 }

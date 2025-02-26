@@ -1,5 +1,9 @@
-import { featureDTO } from "@/Components/AddFeature";
-import { hotelDTOWithId, roomDTO } from "@/Components/AddRoom";
+import { featureDTO } from "@/Components/Admin/Hotel/AddFeature";
+import {
+  hotelDTOWithId,
+  room,
+  roomDTO,
+} from "@/Components/Admin/Hotel/AddRoom";
 import { availabilityDTOWithId } from "@/hooks/useAvailability";
 import { AxiosRequestConfig } from "axios";
 import axiosInstance from "./api-client";
@@ -31,13 +35,13 @@ class httpHotelService {
 
   getHotels() {
     return axiosInstance
-      .get<hotelDTOWithId[]>(this.endpoint + "/hotel/all")
+      .get<hotelDTOWithId[]>(this.endpoint + "/all")
       .then((res) => res.data);
   }
 
   getRooms() {
     return axiosInstance
-      .get<roomDTO[]>(this.endpoint + "/room/all")
+      .get<room[]>(this.endpoint + "/room/all")
       .then((res) => res.data);
   }
 

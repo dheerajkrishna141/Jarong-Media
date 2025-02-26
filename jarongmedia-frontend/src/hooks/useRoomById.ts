@@ -1,4 +1,4 @@
-import { roomDTO } from "@/Components/AddRoom";
+import { roomDTO } from "@/Components/Admin/Hotel/AddRoom";
 import { httpHotelService } from "@/services/httpHotelService";
 import { useQuery } from "@tanstack/react-query";
 

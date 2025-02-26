@@ -1,6 +1,5 @@
 import { CONSTANTS } from "@/constants/AppConstants";
 import useLocalStorage from "@/hooks/useLocalStorage";
-import userDTOFunction from "@/services/httpUserService";
 import {
   Box,
   Button,
@@ -44,7 +43,7 @@ const LoginForm = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!getUserStatus()) {
+    if (getUserStatus() === "false") {
       UserService.logout().then(() => {
         toaster.create({
           type: "info",
@@ -55,17 +54,15 @@ const LoginForm = () => {
       });
       clearUserStatus();
     }
-  }, [getUserStatus()]);
+  }, []);
 
   const handleLogin = (data: userLogin) => {
-    const userFunction = userDTOFunction("/user");
-    userFunction
-      .login({
-        auth: {
-          username: data.email,
-          password: data.password,
-        },
-      })
+    UserService.login({
+      auth: {
+        username: data.email,
+        password: data.password,
+      },
+    })
       .then((data) => {
         setUser(data.endUser);
         setUserStatus(data.status);
@@ -76,12 +73,19 @@ const LoginForm = () => {
       .catch((data) => {
         if (data.response.data.message === CONSTANTS.USER_NOT_VERIFIED) {
           navigate("/user/verify");
+        } else {
+          toaster.create({
+            title: data.response.data.message,
+            type: "error",
+          });
         }
-        toaster.create({
-          title: data.response.data.message,
-          type: "error",
-        });
       });
+  };
+
+  const handleGoogleLogin = () => {
+    window.location.replace(
+      `https://accounts.google.com/o/oauth2/auth?client_id=${CONSTANTS.OAUTH2_CLIENT_ID}&redirect_uri=${CONSTANTS.OAUTH2_REDIRECT_URI}&response_type=code&scope=email profile&access_type=offline&prompt=consent`
+    );
   };
 
   const {
@@ -140,7 +144,12 @@ const LoginForm = () => {
           </form>
         </Card.Root>
         <Box>
-          <Button colorScheme={"light"}>
+          <Button
+            colorScheme={"light"}
+            onClick={() => {
+              handleGoogleLogin();
+            }}
+          >
             <Image boxSize={"25px"} src={google}></Image>
             Login with Google
           </Button>

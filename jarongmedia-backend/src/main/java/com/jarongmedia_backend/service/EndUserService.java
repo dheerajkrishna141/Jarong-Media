@@ -18,5 +18,6 @@ public interface EndUserService {
 	public StatusMessage verifyUser(long otp);
 	
 	public DeleteMessage deleteUser(long id);
+	
 
 }
