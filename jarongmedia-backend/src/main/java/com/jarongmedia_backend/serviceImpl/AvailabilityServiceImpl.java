@@ -1,7 +1,9 @@
 package com.jarongmedia_backend.serviceImpl;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -43,6 +45,8 @@ public class AvailabilityServiceImpl implements AvailabilityService {
 
 		Set<Availability> existingAvailabilities = room.getAvailability();
 		if (existingAvailabilities.isEmpty()) {
+			System.out.println(room);
+			System.out.println(existingAvailabilities);
 			throw new OperationNotAllowed("No availability found!");
 		}
 
@@ -79,6 +83,8 @@ public class AvailabilityServiceImpl implements AvailabilityService {
 		}
 
 		if (updatedAvailabilities.isEmpty()) {
+			System.out.println(room);
+			System.out.println(existingAvailabilities);
 			throw new OperationNotAllowed("No availability found!");
 		}
 
@@ -190,22 +196,25 @@ public class AvailabilityServiceImpl implements AvailabilityService {
 	}
 
 	@Override
-	public Set<Availability> getAvailability(AvailabilityDTO availabilityDTO) {
+	public List<Room> getRoomAvailability(String checkIn, String checkOut) {
 
-		Set<Availability> availableRooms = availabilityRepository
-				.findByCheckInDateLessThanEqualAndCheckOutDateGreaterThanEqual(availabilityDTO.getCheckInDate(),
-						availabilityDTO.getCheckOutDate());
-		availableRooms = availableRooms.stream().filter((availability -> !"booked".equals(availability.getStatus())))
-				.collect(Collectors.toSet());
-//		   Set<AvailabilityUIDTO> modifiedAvailability = availableRooms.stream().map((availability) -> {
-//		        String hotelName = hotelRepository.findNameById(availability.getHotelId());
-//		        return new AvailabilityUIDTO(availability.getRoomId(), hotelName,
-//		                availability.getCheckInDate(), availability.getCheckOutDate(), availability.getStatus());
-//		    }).collect(Collectors.toSet());
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
-		return availableRooms;
+		LocalDate checkInDate = LocalDate.parse(checkIn, formatter);
+		LocalDate checkOutDate = LocalDate.parse(checkOut, formatter);
 
+		List<Room> rooms = roomRepository.findAll();
+
+		return rooms
+				.stream().filter(
+						room -> room.getAvailability().stream()
+								.anyMatch(availability -> availability.getCheckInDate().isAfter(checkInDate)
+										&& availability.getCheckOutDate().isBefore(checkOutDate)))
+				.collect(Collectors.toList());
+		
 	}
+	
+	
 
 	@Override
 	public Set<Availability> getAvailability() {
@@ -213,11 +222,6 @@ public class AvailabilityServiceImpl implements AvailabilityService {
 		Set<Availability> availableRooms = availabilityRepository.findByStatus("available");
 		availableRooms = availableRooms.stream().filter((availability -> !"booked".equals(availability.getStatus())))
 				.collect(Collectors.toSet());
-//		  Set<AvailabilityUIDTO> modifiedAvailability = availableRooms.stream().map((availability) -> {
-//		        String hotelName = this.hotelRepository.findNameById(availability.getHotelId());
-//		        return new AvailabilityUIDTO(availability.getRoomId(), hotelName,
-//		                availability.getCheckInDate(), availability.getCheckOutDate(), availability.getStatus());
-//		    }).collect(Collectors.toSet());
 
 		return availableRooms;
 

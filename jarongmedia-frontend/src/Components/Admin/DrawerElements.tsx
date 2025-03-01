@@ -1,10 +1,16 @@
-import { Box, Button, Collapsible, VStack } from "@chakra-ui/react";
+import { Box, Button, Collapsible, Icon, VStack } from "@chakra-ui/react";
 import { FaChevronDown, FaTachometerAlt } from "react-icons/fa";
 import { ImAccessibility } from "react-icons/im";
 import { IoList } from "react-icons/io5";
 import { LuDoorClosed, LuDoorOpen, LuHouse } from "react-icons/lu";
 import { RiCouponFill } from "react-icons/ri";
 import { Link, useNavigate } from "react-router-dom";
+import {
+  AccordionItem,
+  AccordionItemContent,
+  AccordionItemTrigger,
+  AccordionRoot,
+} from "../UI/accordion";
 
 const elements = [
   { value: "Dashboard", icon: "dashboard", navigateTo: "/" },
@@ -52,29 +58,34 @@ const DrawerElements = () => {
   }) => {
     if (element.value === "Room") {
       return (
-        <Collapsible.Root>
-          <Collapsible.Trigger paddingY="3">
-            <Button size={"lg"} key={element.value} variant={"ghost"}>
-              {getIcon(element.icon)}
-              {element.value}
-
-              <FaChevronDown />
-            </Button>
-          </Collapsible.Trigger>
-          <Collapsible.Content>
-            {collapsibleElements.map((collapseEle) => (
-              <Link
-                to={`/admin${collapseEle.navigateTo}`}
-                key={collapseEle.value}
-              >
-                <Button size={"lg"} key={collapseEle.value} variant={"ghost"}>
-                  {getIcon(collapseEle.icon)}
-                  {collapseEle.value}
-                </Button>
-              </Link>
-            ))}
-          </Collapsible.Content>
-        </Collapsible.Root>
+        <AccordionRoot collapsible variant={"plain"}>
+          <AccordionItem value={"Room"}>
+            <AccordionItemTrigger
+              indicatorPlacement="end"
+              _hover={{ bg: "gray.100", cursor: "pointer" }}
+            >
+              <Icon boxSize={5} ml={5}>
+                {getIcon(element.icon)}
+              </Icon>
+              <Box fontSize="md">{element.value}</Box>
+            </AccordionItemTrigger>
+            <AccordionItemContent>
+              <VStack align={"start"}>
+                {collapsibleElements.map((collapseEle) => (
+                  <Link
+                    to={`/admin${collapseEle.navigateTo}`}
+                    key={collapseEle.value}
+                  >
+                    <Button size={"lg"} variant={"ghost"}>
+                      <Icon>{getIcon(collapseEle.icon)}</Icon>
+                      {collapseEle.value}
+                    </Button>
+                  </Link>
+                ))}
+              </VStack>
+            </AccordionItemContent>
+          </AccordionItem>
+        </AccordionRoot>
       );
     } else
       return (
@@ -88,7 +99,7 @@ const DrawerElements = () => {
   };
   return (
     <Box>
-      <VStack alignItems={"flex-start"}>
+      <VStack alignItems={"flex-start"} gap={4}>
         {elements.map((val) => conditionalCollapsibleRender(val))}
       </VStack>
     </Box>

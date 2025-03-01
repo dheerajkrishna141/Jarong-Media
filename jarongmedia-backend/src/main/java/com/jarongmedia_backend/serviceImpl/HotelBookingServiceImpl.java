@@ -5,9 +5,12 @@ import java.time.LocalDate;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.stereotype.Service;
 
 import com.jarongmedia_backend.dto.AvailabilityDTO;
@@ -20,6 +23,8 @@ import com.jarongmedia_backend.repository.HotelBookingRepository;
 import com.jarongmedia_backend.service.AvailabilityService;
 import com.jarongmedia_backend.service.HotelBookingService;
 import com.jarongmedia_backend.service.StripePaymentService;
+
+import jakarta.servlet.http.HttpServletResponse;
 
 @Service
 public class HotelBookingServiceImpl implements HotelBookingService {
@@ -42,8 +47,11 @@ public class HotelBookingServiceImpl implements HotelBookingService {
 	@Autowired
 	HotelBookingRepository bookingRepository;
 
+	@Value("${httpOnly.cookie.domain}")
+	String domain;
+
 	@Override
-	public HotelBookingDetails bookHotel(HotelBookingDTO dto, String email) {
+	public HotelBookingDetails bookHotel(HotelBookingDTO dto, String email, HttpServletResponse response) {
 
 		EndUser endUser = endUserRepo.findByEmail(email);
 		HotelBookingDetails bookingDetails = new HotelBookingDetails();
@@ -57,18 +65,22 @@ public class HotelBookingServiceImpl implements HotelBookingService {
 		bookingDetails.setRoomDetails(dto.getRoomDetails());
 		bookingDetails.setStatus(dto.getStatus());
 		bookingDetails.setEndUser(endUser);
-		bookingDetails.setConfirmationCode(generateRandomCode(6));
+		String randomCode = generateRandomCode(6);
+		bookingDetails.setConfirmationCode(randomCode);
 		AvailabilityDTO availabilityDTO = mapper.map(dto, AvailabilityDTO.class);
 		availabilityDTO.setStatus(dto.getStatus());
 
 		availabilityService.updateAvailability(availabilityDTO);
 
+		var cookie = ResponseCookie.from("CC").value(randomCode).httpOnly(true).domain(domain).path("/").build();
+
+		response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 		return bookingRepository.save(bookingDetails);
 
 	}
 
-	public StripeResponse initiatePayment(HotelBookingDTO dto) {
-		return paymentService.makePayment(dto);
+	public StripeResponse initiatePayment(String CC) {
+		return paymentService.makePayment(CC);
 	}
 
 	public HotelBookingDetails confirmBooking(String sessionId) {

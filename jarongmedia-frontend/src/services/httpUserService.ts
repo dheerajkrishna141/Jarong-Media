@@ -16,7 +16,7 @@ export interface userRegister extends user {
 }
 
 interface fetchedUser {
-  endUser: { user: user; id: number };
+  endUser: userWithId;
   roles: {
     authority: string;
   }[];
@@ -43,6 +43,12 @@ class httpUserService {
   me() {
     return axiosInstance
       .get<fetchedResponse>(this.endpoint + "/me")
+      .then((res) => res.data);
+  }
+
+  oauth2Me() {
+    return axiosInstance
+      .get<fetchedResponse>(this.endpoint + "/oauth2/me")
       .then((res) => res.data);
   }
 

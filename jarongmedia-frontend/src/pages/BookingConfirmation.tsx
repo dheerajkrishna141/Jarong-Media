@@ -17,6 +17,8 @@ import {
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import checkIcon from "../assets/checkIcon.svg";
+import useSessionStorage from "@/hooks/useSessionStorage";
+import { CONSTANTS } from "@/constants/AppConstants";
 
 const BookingConfirmation = () => {
   const [searchParams] = useSearchParams();
@@ -27,9 +29,14 @@ const BookingConfirmation = () => {
   const textColor = useColorModeValue("gray.600", "gray.300");
 
   const { data: bookingDetails, isError } = useBookingConfirmation();
+  const { clear: clearCheckOut } = useSessionStorage(
+    CONSTANTS.CHECKOUT_STORAGE_KEY
+  );
   const navigate = useNavigate();
   useEffect(() => {
     const sessionId = searchParams.get("session_id");
+
+    clearCheckOut();
     if (!sessionId) {
       navigate("/admin/", { replace: true });
     }

@@ -1,12 +1,9 @@
 import { featureDTO } from "@/Components/Admin/Hotel/AddFeature";
-import {
-  hotelDTOWithId,
-  room,
-  roomDTO,
-} from "@/Components/Admin/Hotel/AddRoom";
-import { availabilityDTOWithId } from "@/hooks/useAvailability";
+import { hotelDTOWithId, room } from "@/Components/Admin/Hotel/AddRoom";
+import { availabilityDTOWithId } from "@/hooks/useRoomAvailability";
 import { AxiosRequestConfig } from "axios";
 import axiosInstance from "./api-client";
+import { response } from "./httpHotelBookingService";
 
 class httpHotelService {
   endpoint: string;
@@ -39,9 +36,9 @@ class httpHotelService {
       .then((res) => res.data);
   }
 
-  getRooms() {
+  getRooms(config: AxiosRequestConfig) {
     return axiosInstance
-      .get<room[]>(this.endpoint + "/room/all")
+      .get<response<room>>(this.endpoint + "/room/all", config)
       .then((res) => res.data);
   }
 
@@ -53,7 +50,7 @@ class httpHotelService {
 
   getRoomById(id: string) {
     return axiosInstance
-      .get<roomDTO>(this.endpoint + `/${id}`)
+      .get<room>(this.endpoint + `/${id}`)
       .then((res) => res.data);
   }
 
@@ -70,6 +67,12 @@ class httpHotelService {
   getAvailability() {
     return axiosInstance
       .get<availabilityDTOWithId[]>(this.endpoint + "/room/availability/all")
+      .then((res) => res.data);
+  }
+
+  getAvailabilityByDates(config: AxiosRequestConfig) {
+    return axiosInstance
+      .get<room[]>(this.endpoint + "/room/availability", config)
       .then((res) => res.data);
   }
 }

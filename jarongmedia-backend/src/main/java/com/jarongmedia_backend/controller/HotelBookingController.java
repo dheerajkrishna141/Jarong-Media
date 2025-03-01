@@ -1,5 +1,6 @@
 package com.jarongmedia_backend.controller;
 
+import java.net.http.HttpResponse;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -7,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +23,8 @@ import com.jarongmedia_backend.dto.HotelBookingDTO;
 import com.jarongmedia_backend.service.HotelBookingService;
 import com.jarongmedia_backend.service.StripePaymentService;
 
+import jakarta.servlet.http.HttpServletResponse;
+
 @RestController
 @RequestMapping("/user")
 public class HotelBookingController {
@@ -30,8 +36,18 @@ public class HotelBookingController {
 	StripePaymentService paymentService;
 
 	@PostMapping("/booking/hotel")
-	public ResponseEntity<?> createBooking(@RequestBody HotelBookingDTO dto, Authentication auth) {
-		return new ResponseEntity<>(bookingService.bookHotel(dto, auth.getName()), HttpStatus.CREATED);
+	public ResponseEntity<?> createBooking(@RequestBody HotelBookingDTO dto, Authentication auth,
+			HttpServletResponse response) {
+		String email;
+		if (auth instanceof OAuth2AuthenticationToken) {
+
+			DefaultOAuth2User userDetails = (DefaultOAuth2User) auth.getPrincipal();
+			email = userDetails.getAttribute("email");
+		} else {
+			email = auth.getName();
+		}
+
+		return new ResponseEntity<>(bookingService.bookHotel(dto, email, response), HttpStatus.CREATED);
 	}
 
 	@GetMapping("/booking/hotel/all")
@@ -63,8 +79,8 @@ public class HotelBookingController {
 	}
 
 	@PostMapping("/booking/hotel/initiatePayment")
-	public ResponseEntity<?> initiatePayment(@RequestBody HotelBookingDTO bookingDTO) {
-		return new ResponseEntity<>(paymentService.makePayment(bookingDTO), HttpStatus.CREATED);
+	public ResponseEntity<?> initiatePayment(@CookieValue(defaultValue = "null") String CC) {
+		return new ResponseEntity<>(paymentService.makePayment(CC), HttpStatus.CREATED);
 	}
 
 	@GetMapping("/booking/hotel/confirmation")

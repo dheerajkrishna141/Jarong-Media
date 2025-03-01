@@ -17,9 +17,9 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { useEffect, useMemo, useState } from "react";
-import { hotelDTOWithId } from "../Hotel/AddRoom";
 import { SelectLabel } from "../../UI/select";
 import { toaster } from "../../UI/toaster";
+import { hotelDTOWithId } from "../Hotel/AddRoom";
 
 const Availability = () => {
   const { data: availabilityData, isError, isLoading } = useAvailability();

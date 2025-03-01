@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import com.jarongmedia_backend.dto.HotelBookingDTO;
 import com.jarongmedia_backend.dto.StripeResponse;
 import com.jarongmedia_backend.exceptions.StripePaymentException;
+import com.jarongmedia_backend.repository.HotelBookingRepository;
 import com.jarongmedia_backend.service.StripePaymentService;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
@@ -36,14 +37,18 @@ public class StripePaymentServiceImpl implements StripePaymentService {
 	@Value("${stripe.payment.cancel.url}")
 	private String cancelUrl;
 	
+	@Autowired
+	private HotelBookingRepository bookingRepository;
+	
 
 
 	@Override
-	public StripeResponse makePayment(HotelBookingDTO bookingDTO) {
+	public StripeResponse makePayment(String CC) {
 
 		Stripe.apiKey = stripeKey;
+		var bookingDTO = bookingRepository.findByConfirmationCode(CC);
 		ProductData productData = ProductData.builder().setName(bookingDTO.getRoomId())
-				.setDescription(bookingDTO.toString()).build();
+				.setDescription("Room booking for room: "+bookingDTO.getRoomId()).build();
 
 		PriceData priceData = PriceData.builder().setCurrency("USD")
 				.setUnitAmountDecimal(BigDecimal.valueOf(bookingDTO.getTotalAmount() * 100) ).setProductData(productData).build();

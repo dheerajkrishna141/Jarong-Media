@@ -7,9 +7,11 @@ import org.springframework.data.domain.Page;
 import com.jarongmedia_backend.dto.HotelBookingDTO;
 import com.jarongmedia_backend.entities.HotelBookingDetails;
 
+import jakarta.servlet.http.HttpServletResponse;
+
 public interface HotelBookingService {
 
-	public HotelBookingDetails bookHotel(HotelBookingDTO dto, String email);
+	public HotelBookingDetails bookHotel(HotelBookingDTO dto, String email, HttpServletResponse response);
 
 	public HotelBookingDetails confirmBooking(String sessionId);
 

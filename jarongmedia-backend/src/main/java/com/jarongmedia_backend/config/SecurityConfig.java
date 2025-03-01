@@ -13,7 +13,12 @@ import org.springframework.web.cors.CorsConfiguration;
 public class SecurityConfig {
 
 	@Autowired
+	CustomOAuth2SuccessHandler auth2SuccessHandler;
+
+	@Autowired
 	AuthenticationEntryPoint authEntry;
+
+
 
 	@Autowired
 	CustomLogoutHandler logoutHandler;
@@ -39,6 +44,10 @@ public class SecurityConfig {
 			auth.requestMatchers("/user/register", "/user/login", "/user/verify", "/auth/**").permitAll();
 			auth.anyRequest().authenticated();
 
+		});
+
+		http.oauth2Login(login -> {
+			login.successHandler(auth2SuccessHandler);
 		});
 
 		http.httpBasic(login -> {

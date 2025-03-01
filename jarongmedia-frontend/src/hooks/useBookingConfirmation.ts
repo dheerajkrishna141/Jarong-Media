@@ -3,13 +3,13 @@ import HotelBookingService from "@/services/HotelBookingService";
 import { userWithId } from "@/services/httpUserService";
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
-import useLocalStorage from "./useLocalStorage";
+import useSessionStorage from "./useSessionStorage";
 
 const useBookingConfirmation = () => {
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get("session_id") || "";
 
-  const { getItem: getUser } = useLocalStorage(CONSTANTS.USER_STORAGE_KEY);
+  const { getItem: getUser } = useSessionStorage(CONSTANTS.USER_STORAGE_KEY);
   const user: userWithId = JSON.parse(getUser() || "");
   return useQuery({
     queryKey: ["confirmation", user.id],

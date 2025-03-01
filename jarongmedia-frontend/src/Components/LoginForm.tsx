@@ -1,13 +1,15 @@
 import { CONSTANTS } from "@/constants/AppConstants";
-import useLocalStorage from "@/hooks/useLocalStorage";
 import {
   Box,
   Button,
   Card,
   Field,
+  HStack,
   Image,
   Input,
+  Separator,
   Stack,
+  Text,
   VStack,
 } from "@chakra-ui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,6 +20,8 @@ import google from "../assets/google.jpeg";
 import { toaster } from "./UI/toaster";
 import { useEffect } from "react";
 import UserService from "@/services/UserService";
+import useSessionStorage from "@/hooks/useSessionStorage";
+import { PasswordInput } from "./UI/password-input";
 
 const schema = z.object({
   email: z.string().email({ message: "Enter a valid Email" }),
@@ -33,12 +37,12 @@ interface userLogin {
   password: string;
 }
 const LoginForm = () => {
-  const { setItem: setUser } = useLocalStorage(CONSTANTS.USER_STORAGE_KEY);
+  const { setItem: setUser } = useSessionStorage(CONSTANTS.USER_STORAGE_KEY);
   const {
     setItem: setUserStatus,
     getItem: getUserStatus,
     clear: clearUserStatus,
-  } = useLocalStorage(CONSTANTS.USER_STATUS_KEY);
+  } = useSessionStorage(CONSTANTS.USER_STATUS_KEY);
 
   const navigate = useNavigate();
 
@@ -67,7 +71,9 @@ const LoginForm = () => {
         setUser(data.endUser);
         setUserStatus(data.status);
         if (data.endUser.roles[0].authority === "ROLE_ADMIN") {
-          navigate("/admin", { replace: true });
+          navigate("/admin");
+        } else {
+          navigate("/user");
         }
       })
       .catch((data) => {
@@ -84,7 +90,7 @@ const LoginForm = () => {
 
   const handleGoogleLogin = () => {
     window.location.replace(
-      `https://accounts.google.com/o/oauth2/auth?client_id=${CONSTANTS.OAUTH2_CLIENT_ID}&redirect_uri=${CONSTANTS.OAUTH2_REDIRECT_URI}&response_type=code&scope=email profile&access_type=offline&prompt=consent`
+      "http://localhost:8080/oauth2/authorization/google"
     );
   };
 
@@ -97,9 +103,9 @@ const LoginForm = () => {
     resolver: zodResolver(schema),
   });
   return (
-    <div>
-      <VStack spaceY={10} mb={10} mt={{ base: 0, lg: 150 }}>
-        <Card.Root w={{ base: "500px", lg: "700" }}>
+    <Box>
+      <VStack spaceY={10} mb={10} mt={{ base: 100, lg: 150 }}>
+        <Card.Root shadow={"md"} w={"500px"}>
           <Card.Header>
             <Card.Title>Sign in</Card.Title>
           </Card.Header>
@@ -111,8 +117,11 @@ const LoginForm = () => {
             <Card.Body>
               <Stack gap="4" w="full">
                 <Field.Root invalid={errors.email ? true : false}>
-                  <Field.Label>Email</Field.Label>
+                  <Field.Label>
+                    Email<p className="text-red-700">*</p>
+                  </Field.Label>
                   <Input
+                    border={"sm"}
                     {...register("email")}
                     type="email"
                     id="EmailId"
@@ -120,9 +129,11 @@ const LoginForm = () => {
                   />
                   <Field.ErrorText>{errors.email?.message}</Field.ErrorText>
                 </Field.Root>
-                <Field.Root invalid={errors.password ? true : false}>
-                  <Field.Label>Password</Field.Label>
-                  <Input {...register("password")} type="password"></Input>
+                <Field.Root mt={5} invalid={errors.password ? true : false}>
+                  <Field.Label>
+                    Password<p className="text-red-700">*</p>
+                  </Field.Label>
+                  <PasswordInput border={"sm"} {...register("password")} />
                   <Field.ErrorText>{errors.password?.message}</Field.ErrorText>
                 </Field.Root>
               </Stack>
@@ -143,6 +154,12 @@ const LoginForm = () => {
             </Card.Footer>
           </form>
         </Card.Root>
+
+        <HStack>
+          <Separator flex="1" w={"300px"} />
+          <Text flexShrink="0">OR</Text>
+          <Separator flex="1" />
+        </HStack>
         <Box>
           <Button
             colorScheme={"light"}
@@ -155,7 +172,7 @@ const LoginForm = () => {
           </Button>
         </Box>
       </VStack>
-    </div>
+    </Box>
   );
 };
 

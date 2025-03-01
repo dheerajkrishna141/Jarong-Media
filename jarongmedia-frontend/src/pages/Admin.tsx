@@ -1,7 +1,5 @@
-import DrawerElements from "@/Components/DrawerElements";
-import NavBar from "@/Components/NavBar";
-import { CONSTANTS } from "@/constants/AppConstants";
-import useLocalStorage from "@/hooks/useLocalStorage";
+import DrawerElements from "@/Components/Admin/DrawerElements";
+import NavBar from "@/Components/User/Layout/NavBar";
 import {
   Box,
   Container,
@@ -11,7 +9,7 @@ import {
   useBreakpointValue,
 } from "@chakra-ui/react";
 import { useEffect } from "react";
-import { Navigate, Outlet } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 
 const Admin = () => {
   useEffect(() => {});

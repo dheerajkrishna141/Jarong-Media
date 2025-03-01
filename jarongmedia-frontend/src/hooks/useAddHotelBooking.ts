@@ -3,10 +3,10 @@ import { CONSTANTS } from "@/constants/AppConstants";
 import HotelBookingService from "@/services/HotelBookingService";
 import { HotelBookingDTO } from "@/services/httpHotelBookingService";
 import { useMutation } from "@tanstack/react-query";
-import useLocalStorage from "./useLocalStorage";
+import useSessionStorage from "./useSessionStorage";
 
 const useAddHotelBooking = () => {
-  const { setItem: setCheckOut } = useLocalStorage(
+  const { setItem: setCheckOut } = useSessionStorage(
     CONSTANTS.CHECKOUT_STORAGE_KEY
   );
   return useMutation({
@@ -17,8 +17,9 @@ const useAddHotelBooking = () => {
       });
     },
     onSuccess: (bookingDTO) => {
-      setCheckOut(bookingDTO);
-      window.location.href = "/admin/checkout";
+      window.location.href = "/user/booking/payment";
+      // setCheckOut(bookingDTO);
+      // window.location.href = "/admin/checkout";
     },
     onError: (error: any) => {
       toaster.create({

@@ -1,4 +1,4 @@
-import useAvailability from "@/hooks/useAvailability";
+import useRoomAvailability from "@/hooks/useRoomAvailability";
 import useHotels from "@/hooks/useHotels";
 import {
   Badge,
@@ -39,9 +39,9 @@ const Availability = () => {
   }, []);
 
   const allRooms = useMemo(() => {
-    if (value[0] === "all") return roomData;
+    if (value[0] === "all") return roomData?.content;
 
-    return roomData?.filter((room) => room.hotelId === value[0]);
+    return roomData?.content.filter((room) => room.hotelId === value[0]);
   }, [value]);
 
   const hotels = createListCollection({
@@ -73,7 +73,7 @@ const Availability = () => {
             >
               <SelectLabel>Select Hotel</SelectLabel>
               <SelectTrigger>
-                <SelectValueText placeholder="Select movie" />
+                <SelectValueText placeholder="Select Hotel" />
               </SelectTrigger>
               <SelectContent>
                 {hotels.items.map((hotel) => (
@@ -104,7 +104,7 @@ const Availability = () => {
                 </Table.Row>
               </Table.Header>
               <Table.Body>
-                {(value[0] ? allRooms : roomData)?.map((room) => (
+                {(value[0] ? allRooms : roomData?.content)?.map((room) => (
                   <Table.Row key={room.id}>
                     <Table.Cell>{room.id}</Table.Cell>
                     <Table.Cell>{room.category}</Table.Cell>

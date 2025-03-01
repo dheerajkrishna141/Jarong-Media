@@ -1,8 +1,9 @@
 import { CONSTANTS } from "@/constants/AppConstants";
-import useLocalStorage from "@/hooks/useLocalStorage";
+import useSessionStorage from "@/hooks/useSessionStorage";
 import { user } from "@/services/httpUserService";
 import UserService from "@/services/UserService";
 import {
+  Avatar,
   AvatarRoot,
   Button,
   HStack,
@@ -13,16 +14,24 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
-import { BsIncognito } from "react-icons/bs";
+import { FaUserCircle } from "react-icons/fa";
 import { IoChevronDownCircleOutline } from "react-icons/io5";
 import { Link, useNavigate } from "react-router-dom";
 
 const ProfilePop = () => {
-  const { getItem: getUser, clear: clearUser } = useLocalStorage(
+  const { getItem: getUser, clear: clearUser } = useSessionStorage(
     CONSTANTS.USER_STORAGE_KEY
   );
-  const { clear: clearUserStatus } = useLocalStorage(CONSTANTS.USER_STATUS_KEY);
+  const { clear: clearUserStatus } = useSessionStorage(
+    CONSTANTS.USER_STATUS_KEY
+  );
   const navigate = useNavigate();
+
+  const storedUser = getUser();
+
+  const toCamelCase = (str: string): string => {
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+  };
 
   const handleLogout = () => {
     UserService.logout().then(() => {
@@ -31,17 +40,18 @@ const ProfilePop = () => {
       navigate("/login", { replace: true });
     });
   };
-  const user: user = JSON.parse(getUser() || "");
+  const user: user = JSON.parse(storedUser || "");
 
   return (
     <div>
       <MenuRoot>
         <MenuTrigger>
           <HStack>
-            <AvatarRoot size="lg">
-              <BsIncognito />
-            </AvatarRoot>
-            <Text display={{ base: "none", md: "block" }}>ADMIN</Text>
+            <Avatar.Root size={"lg"} colorPalette={"purple"}>
+              <Avatar.Image src={"/profileImage"} />
+              <Avatar.Fallback name={`${user.firstName} ${user.lastName}`} />
+            </Avatar.Root>
+
             <IoChevronDownCircleOutline />
           </HStack>
         </MenuTrigger>
@@ -56,14 +66,16 @@ const ProfilePop = () => {
             <HStack>
               <VStack align="start" gap={0}>
                 <Text fontWeight="bold" fontSize="lg">
-                  {user.firstName} {user.lastName}
+                  {toCamelCase(user.firstName)} {toCamelCase(user.lastName)}
                 </Text>
                 <Text color="gray.500">{user.email}</Text>
               </VStack>
             </HStack>
 
             <VStack align="stretch" gap={2}>
-              <MenuItem value="My Profile">My Profile</MenuItem>
+              <MenuItem value="My Profile">
+                <Link to={"/user/profile"}>My Profile</Link>
+              </MenuItem>
               <MenuItem value="Common Settings">
                 <Link to={"/admin/commonSettings"}>Common Settings</Link>
               </MenuItem>

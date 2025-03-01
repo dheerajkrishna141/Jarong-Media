@@ -1,5 +1,6 @@
 package com.jarongmedia_backend.dto;
 
+import java.util.HashMap;
 import java.util.List;
 
 import org.bson.types.ObjectId;
@@ -21,5 +22,6 @@ public class RoomDTO {
 	private ObjectId hotelId;
 	private double pricePerNight;
 	private String capacity;
+	private HashMap<String, String> gallery;
 
 }

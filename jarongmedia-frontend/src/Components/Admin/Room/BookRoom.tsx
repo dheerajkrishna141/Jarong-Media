@@ -1,7 +1,7 @@
 import useAddHotelBooking from "@/hooks/useAddHotelBooking";
 import useHotels from "@/hooks/useHotels";
 import useRooms from "@/hooks/useRooms";
-import { HotelBookingDTO } from "@/services/httpHotelBookingService";
+import { HotelBookingDTO, response } from "@/services/httpHotelBookingService";
 import {
   Box,
   Button,
@@ -76,14 +76,16 @@ const BookRoom = () => {
   const { data: hotelData } = useHotels();
   const { mutate: createBooking } = useAddHotelBooking();
 
-  const allRooms: room[] = roomData || [];
+  const allRooms: response<room> = roomData || ({} as response<room>);
   const allHotels: hotelDTOWithId[] = hotelData || [];
 
   const selectedHotel = watch("hotel");
 
   const shortListedRooms = useMemo(() => {
     if (!selectedHotel) return [] as roomDTO[];
-    return allRooms?.filter((room) => room.hotelId === selectedHotel[0]);
+    return allRooms.content?.filter(
+      (room) => room.hotelId === selectedHotel[0]
+    );
   }, [selectedHotel]);
 
   const rooms = createListCollection({
@@ -108,7 +110,7 @@ const BookRoom = () => {
       (new Date(checkOut).getTime() - new Date(checkIn).getTime()) /
       (1000 * 60 * 60 * 24);
 
-    const selectedRoom = roomData?.filter((room) => {
+    const selectedRoom = roomData?.content.filter((room) => {
       return room.id === roomId[0];
     });
     const ratePerDay = selectedRoom ? selectedRoom[0].pricePerNight : 0;

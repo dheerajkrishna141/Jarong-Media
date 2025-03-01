@@ -1,5 +1,6 @@
 package com.jarongmedia_backend.serviceImpl;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -8,12 +9,16 @@ import java.util.Optional;
 import org.bson.types.ObjectId;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.jarongmedia_backend.documents.Availability;
 import com.jarongmedia_backend.documents.Features;
 import com.jarongmedia_backend.documents.Hotel;
 import com.jarongmedia_backend.documents.Room;
+import com.jarongmedia_backend.dto.AvailabilityDTO;
 import com.jarongmedia_backend.dto.FeatureDTO;
 import com.jarongmedia_backend.dto.HotelDTO;
 import com.jarongmedia_backend.dto.RoomDTO;
@@ -126,8 +131,10 @@ public class HotelServiceImpl implements HotelService {
 	}
 
 	@Override
-	public List<Room> getRooms() {
-		List<Room> rooms = roomRepository.findAll();
+	public Page<Room> getRooms(Integer pageNo, Integer pageSize) {
+		Pageable page = PageRequest.of(pageNo, pageSize);
+
+		Page<Room> rooms = roomRepository.findAll(page);
 		if (rooms.isEmpty())
 			throw new EntityNotFoundException("No rooms are present, add rooms!");
 		return rooms;
@@ -138,5 +145,7 @@ public class HotelServiceImpl implements HotelService {
 		ObjectId objectId = new ObjectId(id);
 		return hotelRepository.findById(objectId).orElseThrow(()-> new EntityNotFoundException("Hotel Not Found!"));
 	}
+
+
 
 }

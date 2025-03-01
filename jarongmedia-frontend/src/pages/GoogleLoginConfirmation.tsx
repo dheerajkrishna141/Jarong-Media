@@ -1,28 +1,32 @@
 import { toaster } from "@/Components/UI/toaster";
 import { CONSTANTS } from "@/constants/AppConstants";
-import useGoogleConfirmation from "@/hooks/useGoogleConfirmation";
-import useLocalStorage from "@/hooks/useLocalStorage";
+import useAuth from "@/hooks/useAuth";
+import useSessionStorage from "@/hooks/useSessionStorage";
 import { Flex, Spinner, Text, VStack } from "@chakra-ui/react";
 import { useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const GoogleLoginConfirmation = () => {
-  const { setItem: setUser } = useLocalStorage(CONSTANTS.USER_STORAGE_KEY);
-  const { setItem: setUserStatus } = useLocalStorage(CONSTANTS.USER_STATUS_KEY);
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-
-  const { data, isError, error, isLoading } = useGoogleConfirmation(
-    searchParams.get("code") || ""
+  const { setItem: setUser } = useSessionStorage(CONSTANTS.USER_STORAGE_KEY);
+  const { setItem: setUserStatus } = useSessionStorage(
+    CONSTANTS.USER_STATUS_KEY
   );
+  const navigate = useNavigate();
+
+  const { data, isError, error, isLoading } = useAuth();
 
   useEffect(() => {
-    if (data.endUser) {
+    if (data?.endUser) {
       console.log(data);
 
       setUser(data.endUser);
       setUserStatus(data.status);
-      navigate("/admin");
+
+      if (data.endUser.roles[0].authority === CONSTANTS.ADMIN_ROLE) {
+        navigate("/admin");
+      } else {
+        navigate("/user");
+      }
     }
     if (isError) {
       toaster.create({
@@ -32,7 +36,7 @@ const GoogleLoginConfirmation = () => {
         duration: 5 * 1000, //5seconds
       });
     }
-  }, [isLoading, data.endUser]);
+  }, [isLoading, data?.endUser]);
 
   return (
     <div>

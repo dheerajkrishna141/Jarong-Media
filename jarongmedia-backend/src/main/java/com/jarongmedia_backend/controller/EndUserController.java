@@ -1,9 +1,13 @@
 package com.jarongmedia_backend.controller;
 
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -54,11 +58,18 @@ public class EndUserController {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
-	
-	
+
 	@GetMapping("/me")
-	public ResponseEntity<?> getUser(Authentication auth){
-		return new ResponseEntity<loginMessage>(endUserService.loginUser(auth.getName()), HttpStatus.OK);
+	public ResponseEntity<?> getUser(Authentication auth) {
+		String email;
+		if (auth instanceof OAuth2AuthenticationToken) {
+			
+			DefaultOAuth2User userDetails = (DefaultOAuth2User) auth.getPrincipal();
+			email = userDetails.getAttribute("email");
+		} else {
+			email = auth.getName();
+		}
+		return new ResponseEntity<loginMessage>(endUserService.loginUser(email), HttpStatus.OK);
 	}
 
 	@PostMapping("/verify")
@@ -76,9 +87,17 @@ public class EndUserController {
 	@PostMapping("/updatePassword")
 	public ResponseEntity<?> updatePassword(Authentication auth, @RequestBody passwordDTO password) {
 
+		String email;
+		if (auth instanceof OAuth2AuthenticationToken) {
+			
+			DefaultOAuth2User userDetails = (DefaultOAuth2User) auth.getPrincipal();
+			email = userDetails.getAttribute("email");
+		} else {
+			email = auth.getName();
+		}
 		try {
 
-			return new ResponseEntity<StatusMessage>(endUserService.changePassword(auth.getName(), password),
+			return new ResponseEntity<StatusMessage>(endUserService.changePassword(email, password),
 					HttpStatus.ACCEPTED);
 		} catch (Exception e) {
 
@@ -103,5 +122,4 @@ public class EndUserController {
 
 	}
 
-	
 }

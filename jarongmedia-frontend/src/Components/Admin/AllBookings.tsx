@@ -24,10 +24,11 @@ import {
   PaginationNextTrigger,
   PaginationPrevTrigger,
   PaginationRoot,
-} from "../UI/pagination";
+} from "@/Components/UI/pagination";
 import { hotelDTOWithId } from "./Hotel/AddRoom";
 import { InputGroup } from "../UI/input-group";
 import { LuSearch } from "react-icons/lu";
+import { Pagination } from "../Custom/pagination";
 
 const AllBookings = () => {
   const [page, setPage] = useState(1);
@@ -147,18 +148,16 @@ const AllBookings = () => {
               )}
             </Table.Body>
           </Table.Root>
+
           <Flex justifyContent={"center"} mt={4}>
-            <PaginationRoot
-              count={bookingData?.totalPages || 1}
-              page={page}
-              onPageChange={(e) => setPage(e.page)}
-            >
-              <HStack>
-                <PaginationPrevTrigger />
-                <PaginationItems />
-                <PaginationNextTrigger />
-              </HStack>
-            </PaginationRoot>
+            <Pagination
+              showFirstLastButtons={false}
+              totalPages={bookingData?.totalPages || 1}
+              currentPage={page}
+              onChange={(e) => setPage(e)}
+              size="sm"
+              colorScheme="black"
+            />
           </Flex>
         </Card.Body>
       </Card.Root>

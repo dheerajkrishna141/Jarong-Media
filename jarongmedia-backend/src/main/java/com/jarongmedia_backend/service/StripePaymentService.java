@@ -5,8 +5,8 @@ import com.jarongmedia_backend.dto.StripeResponse;
 
 public interface StripePaymentService {
 
-	public StripeResponse makePayment(HotelBookingDTO bookingDTO);
 	public String getBookingConfirmationCode(String sessionId);
+	StripeResponse makePayment(String CC);
 
 
 }

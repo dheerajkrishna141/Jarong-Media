@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.jarongmedia_backend.dto.AvailabilityDTO;
@@ -45,25 +46,11 @@ public class HotelController {
 		return new ResponseEntity<>(hotelService.getFeatures(), HttpStatus.OK);
 
 	}
-	
+
 	@GetMapping("/hotel/{id}")
-	public ResponseEntity<?> getHotelById(@PathVariable String id){
-		
+	public ResponseEntity<?> getHotelById(@PathVariable String id) {
+
 		return new ResponseEntity<>(hotelService.getHotelById(id), HttpStatus.OK);
-	}
-
-	@GetMapping("/all")
-	public ResponseEntity<?> getHotels() {
-
-		return new ResponseEntity<>(hotelService.getHotels(), HttpStatus.OK);
-
-	}
-	
-	@GetMapping("/room/all")
-	public ResponseEntity<?> getRooms() {
-
-		return new ResponseEntity<>(hotelService.getRooms(), HttpStatus.OK);
-
 	}
 
 	@PostMapping("/room")

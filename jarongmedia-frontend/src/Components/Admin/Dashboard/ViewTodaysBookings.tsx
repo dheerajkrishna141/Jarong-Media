@@ -17,7 +17,8 @@ import {
   PaginationNextTrigger,
   PaginationPrevTrigger,
   PaginationRoot,
-} from "../../UI/pagination";
+} from "@/Components/UI/pagination";
+import { Pagination } from "@/Components/Custom/pagination";
 
 const ViewTodaysBookings = () => {
   const getCurrentDateFormatted = (): string => {
@@ -94,17 +95,14 @@ const ViewTodaysBookings = () => {
             </Table.Root>
 
             <Flex justifyContent={"center"} mt={4}>
-              <PaginationRoot
-                count={todaysBookings?.totalPages || 1}
-                page={page}
-                onPageChange={(e) => setPage(e.page)}
-              >
-                <HStack>
-                  <PaginationPrevTrigger />
-                  <PaginationItems />
-                  <PaginationNextTrigger />
-                </HStack>
-              </PaginationRoot>
+              <Pagination
+                showFirstLastButtons={false}
+                totalPages={todaysBookings?.totalPages || 1}
+                currentPage={page}
+                onChange={(e) => setPage(e)}
+                size="sm"
+                colorScheme="black"
+              />
             </Flex>
           </Box>
         )}

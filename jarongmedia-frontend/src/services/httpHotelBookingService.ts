@@ -46,9 +46,9 @@ class httpHoteBookingService {
     this.endpoint = endpoint;
   }
 
-  initiatePayment(config: AxiosRequestConfig) {
+  initiatePayment() {
     return axiosInstance
-      .post<paymentResponse>(this.endpoint + "/initiatePayment", config.data)
+      .post<paymentResponse>(this.endpoint + "/initiatePayment")
       .then((res) => res.data);
   }
 

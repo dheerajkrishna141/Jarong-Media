@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { useColorModeValue } from "@/Components/UI/color-mode";
+import { Checkbox } from "@/Components/UI/checkbox";
+import { toaster } from "@/Components/UI/toaster";
 import { CONSTANTS } from "@/constants/AppConstants";
-import useLocalStorage from "@/hooks/useLocalStorage";
+import useSessionStorage from "@/hooks/useSessionStorage";
 import HotelBookingService from "@/services/HotelBookingService";
 import { HotelBookingDTOWithCC } from "@/services/httpHotelBookingService";
 import {
@@ -10,18 +10,16 @@ import {
   Card,
   Flex,
   Grid,
-  Heading,
   Image,
   Stack,
   Text,
 } from "@chakra-ui/react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Checkbox } from "@/Components/UI/checkbox";
-import { toaster } from "@/Components/UI/toaster";
 
 const PaymentPage = () => {
   const navigate = useNavigate();
-  const { getItem: getCheckOut, clear: clearCheckOut } = useLocalStorage(
+  const { getItem: getCheckOut } = useSessionStorage(
     CONSTANTS.CHECKOUT_STORAGE_KEY
   );
   const bookingDTO: HotelBookingDTOWithCC = JSON.parse(getCheckOut() || "");
@@ -49,11 +47,8 @@ const PaymentPage = () => {
         duration: 1 * 60 * 1000, //2mins
       });
     } else {
-      HotelBookingService.initiatePayment({
-        data: bookingDTO,
-      }).then((res) => {
+      HotelBookingService.initiatePayment().then((res) => {
         window.location.replace(res.sessionUrl);
-        clearCheckOut();
       });
     }
   };
