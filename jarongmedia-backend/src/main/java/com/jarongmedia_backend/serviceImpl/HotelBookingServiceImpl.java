@@ -21,6 +21,7 @@ import com.jarongmedia_backend.entities.HotelBookingDetails;
 import com.jarongmedia_backend.repository.EndUserRepo;
 import com.jarongmedia_backend.repository.HotelBookingRepository;
 import com.jarongmedia_backend.service.AvailabilityService;
+import com.jarongmedia_backend.service.EmailService;
 import com.jarongmedia_backend.service.HotelBookingService;
 import com.jarongmedia_backend.service.StripePaymentService;
 
@@ -37,6 +38,9 @@ public class HotelBookingServiceImpl implements HotelBookingService {
 
 	@Autowired
 	ModelMapper mapper;
+
+	@Autowired
+	EmailService emailService;
 
 	@Autowired
 	SecureRandom secureRandom;
@@ -90,6 +94,8 @@ public class HotelBookingServiceImpl implements HotelBookingService {
 		bookingDetails.setStatus("booked");
 		AvailabilityDTO availabilityDTO = mapper.map(bookingDetails, AvailabilityDTO.class);
 		availabilityService.updateAvailability(availabilityDTO);
+
+		emailService.sendBookingConfirmationEmail(bookingDetails);
 
 		return bookingRepository.save(bookingDetails);
 

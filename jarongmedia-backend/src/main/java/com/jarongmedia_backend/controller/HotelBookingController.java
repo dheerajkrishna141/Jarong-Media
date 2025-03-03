@@ -51,14 +51,10 @@ public class HotelBookingController {
 	}
 
 	@GetMapping("/booking/hotel/all")
-	public ResponseEntity<?> getAllBookings(@RequestParam(required = false) Integer pageNo,
-			@RequestParam(required = false) Integer pageSize, @RequestParam(required = false) String search_cc) {
-		if (pageNo == null) {
-			pageNo = 0;
-		}
-		if (pageSize == null) {
-			pageSize = 10;
-		}
+	public ResponseEntity<?> getAllBookings(@RequestParam(required = false, defaultValue = "1") Integer pageNo,
+			@RequestParam(required = false, defaultValue = "10") Integer pageSize,
+			@RequestParam(required = false, defaultValue = "") String search_cc) {
+
 		if (search_cc.isBlank()) {
 			return new ResponseEntity<>(bookingService.getAllBookings((pageNo - 1), pageSize), HttpStatus.OK);
 		}

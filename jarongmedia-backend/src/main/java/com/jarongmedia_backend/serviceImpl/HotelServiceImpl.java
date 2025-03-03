@@ -1,6 +1,5 @@
 package com.jarongmedia_backend.serviceImpl;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -18,7 +17,6 @@ import com.jarongmedia_backend.documents.Availability;
 import com.jarongmedia_backend.documents.Features;
 import com.jarongmedia_backend.documents.Hotel;
 import com.jarongmedia_backend.documents.Room;
-import com.jarongmedia_backend.dto.AvailabilityDTO;
 import com.jarongmedia_backend.dto.FeatureDTO;
 import com.jarongmedia_backend.dto.HotelDTO;
 import com.jarongmedia_backend.dto.RoomDTO;

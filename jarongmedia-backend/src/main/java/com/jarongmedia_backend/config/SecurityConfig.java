@@ -5,6 +5,7 @@ import java.util.Collections;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.cors.CorsConfiguration;
@@ -17,8 +18,6 @@ public class SecurityConfig {
 
 	@Autowired
 	AuthenticationEntryPoint authEntry;
-
-
 
 	@Autowired
 	CustomLogoutHandler logoutHandler;
@@ -37,10 +36,10 @@ public class SecurityConfig {
 		}));
 
 		http.authorizeHttpRequests(auth -> {
+			auth.requestMatchers("/public/**").permitAll();
 			auth.requestMatchers("/user/booking/**").authenticated();
 			auth.requestMatchers("/user/delete/{id}").hasAnyRole("ADMIN");
 			auth.requestMatchers("/admin/**").hasAnyRole("ADMIN");
-			auth.requestMatchers("/public/**").permitAll();
 			auth.requestMatchers("/user/register", "/user/login", "/user/verify", "/auth/**").permitAll();
 			auth.anyRequest().authenticated();
 

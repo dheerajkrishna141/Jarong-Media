@@ -2,6 +2,8 @@ package com.jarongmedia_backend.serviceImpl;
 
 import java.math.BigDecimal;
 import java.security.SecureRandom;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,30 +38,32 @@ public class StripePaymentServiceImpl implements StripePaymentService {
 
 	@Value("${stripe.payment.cancel.url}")
 	private String cancelUrl;
-	
+
 	@Autowired
 	private HotelBookingRepository bookingRepository;
-	
-
 
 	@Override
 	public StripeResponse makePayment(String CC) {
 
 		Stripe.apiKey = stripeKey;
+
+		Map<String, String> metaData = new HashMap<String, String>();
+
 		var bookingDTO = bookingRepository.findByConfirmationCode(CC);
 		ProductData productData = ProductData.builder().setName(bookingDTO.getRoomId())
-				.setDescription("Room booking for room: "+bookingDTO.getRoomId()).build();
+				.setDescription("Room booking for room: " + bookingDTO.getRoomId()).build();
 
+		metaData.put("confirmation_code", bookingDTO.getConfirmationCode());
+		metaData.put("email", bookingDTO.getEndUser().getEmail());
 		PriceData priceData = PriceData.builder().setCurrency("USD")
-				.setUnitAmountDecimal(BigDecimal.valueOf(bookingDTO.getTotalAmount() * 100) ).setProductData(productData).build();
-		
+				.setUnitAmountDecimal(BigDecimal.valueOf(bookingDTO.getTotalAmount() * 100)).setProductData(productData)
+				.build();
+
 		LineItem lineItem = LineItem.builder().setPriceData(priceData).setQuantity(1L).build();
 
 		SessionCreateParams createParams = SessionCreateParams.builder().addLineItem(lineItem).setMode(Mode.PAYMENT)
-				.setSuccessUrl(successUrl+"?session_id={CHECKOUT_SESSION_ID}").setCancelUrl(cancelUrl)
-				.putMetadata("confirmation_code", bookingDTO.getConfirmationCode())
-				.build();
-
+				.setSuccessUrl(successUrl + "?session_id={CHECKOUT_SESSION_ID}").setCancelUrl(cancelUrl)
+				.putAllMetadata(metaData).build();
 
 		try {
 			Session session = Session.create(createParams);
@@ -71,22 +75,17 @@ public class StripePaymentServiceImpl implements StripePaymentService {
 		}
 
 	}
-	
-	
+
 	public String getBookingConfirmationCode(String sessionId) {
-		
-		Stripe.apiKey= stripeKey;
+
+		Stripe.apiKey = stripeKey;
 		try {
 			Session session = Session.retrieve(sessionId);
 			return session.getMetadata().get("confirmation_code");
-			
-		}
-		catch(StripeException e) {
+
+		} catch (StripeException e) {
 			throw new EntityNotFoundException(e.getMessage());
 		}
 	}
-	
-	
-
 
 }

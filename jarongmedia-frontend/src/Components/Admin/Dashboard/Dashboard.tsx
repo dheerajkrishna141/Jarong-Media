@@ -9,7 +9,8 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { IoChevronUpCircleOutline } from "react-icons/io5";
-import ViewTodaysBookings from "./Dashboard/ViewTodaysBookings";
+import ViewTodaysBookings from "./ViewTodaysBookings";
+import ViewRequests from "./ViewRequests";
 
 const metrics = [
   {
@@ -83,6 +84,7 @@ export const Dashboard = () => {
         </Grid>
 
         <ViewTodaysBookings></ViewTodaysBookings>
+        <ViewRequests />
       </Box>
     </>
   );

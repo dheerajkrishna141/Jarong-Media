@@ -1,4 +1,4 @@
-import userDTOFunction, { userRegister } from "@/services/httpUserService";
+import { userDTOFunction, userRegister } from "@/services/httpUserService";
 import {
   Box,
   Button,

@@ -73,7 +73,7 @@ public class EndUserServiceImpl implements EndUserService {
 		OTP otp = createOTP(tempUser);
 		otpRepository.save(otp);
 
-		emailServiceImpl.sendEmail(tempUser.getEmail(), otp.getOtp());
+		emailServiceImpl.sendVerificationEmail(tempUser.getEmail(), otp.getOtp());
 		return tempUser;
 	}
 

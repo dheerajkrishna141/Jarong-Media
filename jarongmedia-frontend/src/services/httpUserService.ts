@@ -15,6 +15,25 @@ export interface userRegister extends user {
   roles: string[];
 }
 
+export interface requestForm {
+  firstName: string;
+  lastName: string;
+  email: string;
+  mobile: string;
+  arrivalFrom: string;
+  arrivalTo: string;
+  travelType: string;
+  date1: string;
+  date2: string;
+  budget: number;
+  status: string;
+  createdDate: string;
+}
+
+export interface requestFormWithId extends requestForm {
+  id: number;
+}
+
 interface fetchedUser {
   endUser: userWithId;
   roles: {
@@ -46,9 +65,9 @@ class httpUserService {
       .then((res) => res.data);
   }
 
-  oauth2Me() {
+  createRequest(config: AxiosRequestConfig) {
     return axiosInstance
-      .get<fetchedResponse>(this.endpoint + "/oauth2/me")
+      .post<requestFormWithId>(this.endpoint + "/request", config.data)
       .then((res) => res.data);
   }
 

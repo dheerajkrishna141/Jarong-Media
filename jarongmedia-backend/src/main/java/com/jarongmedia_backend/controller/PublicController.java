@@ -5,15 +5,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jarongmedia_backend.dto.AvailabilityDTO;
+import com.jarongmedia_backend.dto.RequestFormDTO;
 import com.jarongmedia_backend.repository.RoomRepository;
 import com.jarongmedia_backend.service.AvailabilityService;
 import com.jarongmedia_backend.service.HotelService;
+import com.jarongmedia_backend.service.RequestFormService;
 
 @RestController
 @RequestMapping("/public")
@@ -27,6 +29,9 @@ public class PublicController {
 
 	@Autowired
 	RoomRepository roomRepository;
+
+	@Autowired
+	RequestFormService formService;
 
 	@GetMapping("/room/{roomId}")
 	public ResponseEntity<?> getRoom(@PathVariable String roomId) {
@@ -47,6 +52,13 @@ public class PublicController {
 	public ResponseEntity<?> getHotels() {
 
 		return new ResponseEntity<>(hotelService.getHotels(), HttpStatus.OK);
+
+	}
+
+	@PostMapping("/request")
+	public ResponseEntity<?> createRequest(@RequestBody RequestFormDTO dto) {
+
+		return new ResponseEntity<>(formService.createRequest(dto), HttpStatus.CREATED);
 
 	}
 

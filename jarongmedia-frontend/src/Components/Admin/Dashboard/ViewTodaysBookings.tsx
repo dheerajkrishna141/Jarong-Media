@@ -63,7 +63,6 @@ const ViewTodaysBookings = () => {
               <Table.Header>
                 <Table.Row>
                   <Table.ColumnHeader>ROOM NUMBER</Table.ColumnHeader>
-                  <Table.ColumnHeader>HOTEL ID</Table.ColumnHeader>
                   <Table.ColumnHeader>CHECK IN</Table.ColumnHeader>
                   <Table.ColumnHeader>CHECK OUT</Table.ColumnHeader>
                   <Table.ColumnHeader>CONFIRMATION CODE</Table.ColumnHeader>
@@ -74,7 +73,6 @@ const ViewTodaysBookings = () => {
                 {todaysBookings?.content.map((booking) => (
                   <Table.Row key={booking.id}>
                     <Table.Cell>{booking.roomId}</Table.Cell>
-                    <Table.Cell>{booking.hotelId}</Table.Cell>
                     <Table.Cell>{booking.checkInDate}</Table.Cell>
                     <Table.Cell>{booking.checkOutDate}</Table.Cell>
                     <Table.Cell>{booking.confirmationCode}</Table.Cell>

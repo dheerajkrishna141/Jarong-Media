@@ -4,7 +4,6 @@ import BookingPage from "@/pages/BookingPage";
 import { createBrowserRouter } from "react-router-dom";
 import App from "../App";
 import AllBookings from "../Components/Admin/AllBookings";
-import { Dashboard } from "../Components/Admin/Dashboard";
 import Feature from "../Components/Admin/Feature";
 import AddAvailability from "../Components/Admin/Hotel/AddAvailability";
 import AddFeature from "../Components/Admin/Hotel/AddFeature";
@@ -32,6 +31,7 @@ import UserPaymentPage from "@/pages/UserPaymentPage";
 import BookingErrorPage from "@/pages/BookingErrorPage";
 import UserRequestPage from "@/pages/UserRequestPage";
 import ErrorPage from "@/pages/Error";
+import { Dashboard } from "@/Components/Admin/Dashboard/Dashboard";
 
 const routes = createBrowserRouter([
   {
